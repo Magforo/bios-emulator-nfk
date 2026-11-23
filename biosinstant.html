@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <link href="bios — копия.css" rel="stylesheet">
+  <link rel="stylesheet" href="toast.css">
+  
+  <title>BIOS Emulator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+  </style>
+</head>
+<body class="notranslate">
+<div class="main">  
+  <div class="header">
+    Instant Flash
+  </div>
+
+  <div id="FlashInstant" class="FlashInstant" >
+    
+    
+    <div class="leftFlash"> 
+      <div class="cpu_configr" id="cpu_configr">
+        <span id="cpuconff" style="color: black; margin-top: 30px; left: 37%;" class="nochose">
+          BIOS File</span>
+          <br>
+          <span class="underlined"></span> </div>
+    <div style="margin-top: 150px;">   
+    <span id="numberone1" style="margin-left: 15px; color: rgb(94, 94, 94);">No device found</span> 
+    <span id="numbertwo2" style="margin-top: 15px; margin-left: 15px;"></span>  
+    <span id="numberthree3" style="margin-top: 15px; margin-left: 15px;"></span> 
+  </div>   
+    </div>
+    <div class="rightFlash"> 
+      <div class="cpu_configr" id="cpu_configr">
+        <span id="cpuconff" style="color: black; margin-top: 30px; " class="nochose">
+          Device</span>
+          <br>
+          <span class="underlined"></span> </div> 
+          <div style="margin-top: 150px;">   
+            <span id="rightnumberone1" style="margin-left: 15px; color: rgb(94, 94, 94);" >1. SATA:PS-TOSHIBA DT01ACA100</span>
+            <span id="rightnumbertwo2" style="margin-left: 15px; margin-top: 15px;color: rgb(94, 94, 94);">2. SATA:PS-Samsung SSD 860 EVO </span>  
+          </div>  
+    </div>
+    <div class="footertFlash"><span class="f3torescan">F3 to rescan, ESC to reboot.</span>  </div>
+</div>
+   
+ 
+</body>
+</html>
+
+<script>
+localStorage.setItem('paroluserLocal', 'disab')  
+document.addEventListener("keydown", async function(event) {
+  if (event.key === "F3") {
+    event.preventDefault(); // Отменяем стандартное действие F3 (если оно есть)
+    
+    navigator.usb.requestDevice({ filters: [{ /* vendorId: 0xXXXX, productId: 0xYYYY */ }] })
+  .then(device => {
+    console.log("Устройство выбрано:", device);
+    // Здесь можно работать с устройством, например, открыть его:
+    
+    return device.open();
+  })
+
+    try {const devices5 = await navigator.usb.getDevices();
+devices5.forEach(device => {
+  console.log("VendorID:", device.vendorId);
+  console.log("ProductID:", device.productId);
+  console.log("Product Name:", device.productName);
+  console.log("Serial Number:", device.serialNumber);
+});
+
+
+      // Получаем список USB устройств, к которым уже получено разрешение
+      const devices = await navigator.usb.getDevices();
+
+      // Собираем названия устройств. Если productName недоступен, используем vendorId и productId.
+      const deviceNames = devices.map(device => {
+        return device.productName || `USB Device (VID: ${device.vendorId}, PID: ${device.productId})`;
+      });
+
+      // Ограничиваем вывод до максимум 3 устройств
+      const el1 = document.getElementById("numberone1");
+      const el2 = document.getElementById("numbertwo2");
+      const el3 = document.getElementById("numberthree3");
+      
+
+      if (el1) el1.textContent = deviceNames[0] || "No device found";
+      if (el1) el1.style.color = "#1c23a7";
+      if (el2) el2.textContent = deviceNames[1] || "";
+      if (el3) el3.textContent = deviceNames[2] || "";
+
+      console.log("Connected USB devices:", deviceNames);
+    } catch (error) {
+      console.error("Ошибка при получении USB устройств:", error);
+    }
+  }
+
+  if (event.key === "Escape") {
+    // Очищаємо історію, щоб не можна було повернутися назад
+    localStorage.setItem('escapeInstant', 2);
+    history.replaceState(null, "", "bios.html");
+    window.location.href = "bios.html";
+    
+  }
+
+
+});
+
+
+
+</script>

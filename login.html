@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Вхід в систему</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="regstyle.css" rel="stylesheet">
+  <link href="notifications.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&family=Raleway:wght@400;600;700&display=swap');
+    .regg{
+      color: rgb(68, 0, 255);
+    }
+  </style>
+</head>
+<body>
+  <div class="project-name" id="projectName">MartynenkoProject ●</div>
+  <form id="loginForm" action="login_process.php" method="post" novalidate>
+    <div class="container">
+      <h2 id="greeting">Вхід</h2>
+      <br>
+      <div class="form-group">
+        <input type="text" id="first_name" name="first_name" required placeholder=" " autocomplete="given-name">
+        <label for="first_name" id="frstname">Ім'я</label>
+      </div>
+      <div class="form-group">
+        <input type="text" id="second_name" name="second_name" required placeholder=" " autocomplete="family-name">
+        <label for="second_name" id="labSecond">Прізвище</label>
+      </div>
+      <div class="form-group">
+        <input type="password" id="ph_password" name="password" required placeholder=" " autocomplete="current-password">
+        <label for="ph_password" id="labPass">Пароль</label>
+      </div>
+      <input type="hidden" id="csrf_token" name="csrf_token" value="">
+      <button type="submit" id="next">Продовжити</button>
+      <br>
+      <br>
+      <div class="reg"> У вас немає облікового запису? <a class="regg" href="registraion.html"> Зареєструватися </a></div>
+    </div>
+  </form>
+
+  <script src="notifications.js"></script>
+  <script>
+    // Load CSRF token
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('get_csrf_token.php');
+        const data = await response.json();
+        if (data.csrf_token) {
+          document.getElementById('csrf_token').value = data.csrf_token;
+        }
+      } catch (e) {
+        console.error('Failed to load CSRF token');
+        notify.error('Помилка', 'Не вдалося завантажити токен безпеки');
+      }
+    });
+
+    const greetingElement = document.getElementById('greeting');
+
+    // Получаем текущее время
+    const now = new Date();
+    const hours = now.getHours();
+
+    // Логика смены текста
+    if (hours >= 7 && hours < 12) {
+      greetingElement.textContent = 'Добрий ранок';
+    } else if (hours >= 12 && hours < 17) {
+      greetingElement.textContent = 'Доброго дня';
+    } else if (hours >= 17 && hours < 24) {
+      greetingElement.textContent = 'Доброго вечора';
+    } else {
+      greetingElement.textContent = 'Доброї ночі';
+    }
+
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const firstName = document.getElementById('first_name').value.trim();
+      const secondName = document.getElementById('second_name').value.trim();
+      const password = document.getElementById('ph_password').value;
+      const csrfToken = document.getElementById('csrf_token').value;
+
+      if (!firstName || !secondName || !password) {
+        notify.error('Помилка валідації', 'Заповніть усі поля');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('first_name', firstName);
+        formData.append('second_name', secondName);
+        formData.append('password', password);
+        formData.append('csrf_token', csrfToken);
+
+        const response = await fetch('login_process.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          notify.success('Вітаємо!', 'Ви успішно увійшли в систему', { duration: 2000 });
+          // Redirect after notification
+          setTimeout(() => {
+            window.location.href = 'bios.html';
+          }, 1500);
+        } else {
+          if (response.status === 429) {
+            notify.error('Занадто багато спроб', data.error || 'Спробуйте ще раз пізніше');
+          } else if (response.status === 401) {
+            notify.error('Невірні дані', 'Ім\'я, прізвище або пароль невірні');
+          } else if (response.status === 403) {
+            notify.error('Помилка безпеки', data.error || 'Помилка при перевірці безпеки');
+          } else {
+            notify.error('Помилка', data.error || 'Помилка при вході в систему');
+          }
+        }
+      } catch (e) {
+        console.error('Error:', e);
+        notify.error('Помилка підключення', 'Не вдалося з\'єднатися з сервером');
+      }
+    });
+  </script>
+  <script src="scripts/registrationForm.js"></script>
+</body>
+</html>

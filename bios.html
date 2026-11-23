@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en" data-require-auth="true">
+<head>
+  <meta charset="UTF-8">
+  <script src="auth_helper.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <!-- <script>
+    const mode = localStorage.getItem('darkMode');
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+  
+    if (mode === 'ON') {
+      link.href = '/themes/biosDark.css' ;
+    } else {
+      link.href = '/themes/biosLight.css';
+    }
+  
+    document.head.appendChild(link);
+  </script>
+   -->
+ 
+  <link rel="stylesheet" href="toast.css">
+  <link rel="stylesheet" href="bios.css">
+  
+  <title>BIOS Emulator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+  </style>
+</head>
+<body class="notranslate">
+  
+<div class="main">  
+  <div class="header">
+    BIOS SETUP UTILITY
+    <div class="headerr">
+      <div class="menu-item active" id="mainmenu">Main</div>
+      <div class="menu-item" id="octweak">OC Tweaker</div>
+      <div class="menu-item" id="advans">Advanced</div>
+      <div class="menu-item" id="powerr">H/W Monitor</div>
+      <div class="menu-item" id="boott">Boot</div>
+      <div class="menu-item" id="toolss">Security</div>
+      <div class="menu-item" id="exitt">Exit</div>
+      <div class="menu-item" id="task1"><span>Завдання</span></div>
+      
+    </div>
+  </div>
+   <div class="risk">
+    <div id="generalHelp" class="generahlp" style="display: none;">
+      <div id="generalBord"> 
+        <div class="noactive" style="font-size: 1rem;">Press Esc for exit</div>
+        <div style="display: flex; position: relative;  place-items: center; margin-top: 5%; margin-left: 2%;"  id="gener1st" ><div>General Help</div> <div></div><div id="hz"></div></div>
+        <div style="display: flex; position: relative;  place-items: center; margin-top: 0.5%; margin-left: 2%; "  id="gener2st" ><div >←→ Select Screen</div> <div></div><div id="h1z">↑↓ Select item</div></div>
+        <div style="display: flex; position: relative;  place-items: center; margin-top: 0.5%; margin-left: 2%; "  id="gener3st" ><div >+- Change Option/Field</div> <div></div><div id="hz2">Enter Go to Sub Screen</div></div>
+        <div style="display: flex; position: relative;  place-items: center; margin-top: 0.5%; margin-left: 2%; "  id="gener4st" ><div>F7 Discard Changes</div> <div></div><div id="hz3">F9 Load Optimal Defaults</div></div>
+        <div style="display: flex; position: relative;  place-items: center; margin-top: 0.5%; margin-left: 2%; "  id="gener5st" ><div>F10 Save and Exit</div> <div></div><div id="hz4">ESC Exit</div></div>
+      </div>
+     </div>  
+    <div id="hiddenON" style="display: none;">
+    <div class="ramka" id="ramkaDlaScrola">
+      <div class="options" style="display: none">
+        <div class="systemtime" id="systemTime"><span>System Time</span></div>
+
+        <div class="cpu_configr" id="cpu_configr" style="display: none">
+          <span id="cpuconff" style="color: black" class="nochose">
+            CPU Configuration</span>
+            <br>
+            <span class="underlined"></span> </div>   
+        <div class="ocnew" id="scrollthis" style="display: none; margin-top: 30px;">
+          <span id="overClockMod">Overclock Mode</span>
+          <span class="noactive" id="cpufreq" style="padding-left: 40px; margin-top: -5px; font-family: 'Space Mono', serif;"> CPU Frequency (MHz)</span>
+          <span class="noactive" id="pcieFre" style="padding-left: 40px; font-family: 'Space Mono', serif; "> PCIE Frequency (MHz)</span>
+          <span id="overhyi" style="display: block; margin-top: 10px; ">Spread Spectrum</span>
+          <span id="bootFail"  style="display: block; margin-top: 5px;">Boot Failure Guard</span>
+          <span id="bootFailGuard"  style="display: block; margin-top: 5px;">Boot Failure Guard Count</span>
+          <span id="CpuActive"  style="display: block; margin-top: 5px;">CPU Active Core Control</span>
+          <span id="amdTurbo"  style="display: block; margin-top: 5px;">AMD Turbo Core Technology</span>
+          <span id="amdState"  style="display: block; margin-top: 5px;">AMD C-State Support</span>
+          <span id="amdApm" style="display: block; margin-top: 5px;">AMD APM</span>
+          <span class="noactive" id="procesmax" style="display: block; margin-top: 30px;">Processor Maximum Frequency</span>
+          <span class="noactive" id="northb" style="display: block; margin-top: 5px;">North Bridge Maximum Frequency</span>
+          <span class="noactive" id="procmaxvol" style="display: block; margin-top: 5px;">Processor Maximum Voltage</span>
+          <span id="multipliervol" style="display: block; margin-top: 5px;">Multiplier/Voltage Change</span>
+          <span id="multipliercpu" style="display: block; margin-top: 5px;">CPU Frequency Multiplier</span>
+          <span id="cpuvol" style="display: block; margin-top: 5px;">CPU Voltage</span>
+          <span id="cpuvolnbb" style="display: block; margin-top: 5px;">NB Frequency Multiplier</span>
+          <span id="htbus" style="display: block; margin-top: 5px;">HT Bus Speed</span>
+          <span id="htbusswidth" style="display: block; margin-top: 5px;">HT Bus Width</span>
+          <span style="color: black; margin-top: 50px;" class="nochose">Memory Configuration</span>
+            <br>
+            <span class="underlined"></span> 
+            <span id="memclock" style="display: block; margin-top: 30px;">Memory Clock</span>
+            <span id="memtiming" style="display: block; margin-top: 5px;">▶ Memory Timing</span>
+            <span style="color: black; margin-top: 50px;" class="nochose">Chipset Settings</span>
+            <br>
+            <span class="underlined"></span>
+            <span id="onboardGpu" style="display: block; margin-top: 30px;">Onboard GPU Clock Override</span>
+            <span id="onboardGpucllock" style="display: block; margin-top: 5px; padding-left: 40px;">Onboard GPU Clock</span>
+            <span id="DramVol" style="display: block; margin-top: 5px;">DRAM Voltage</span>
+            <span id="vol_1" style="display: block; margin-top: 5px;">+1.1 Voltage</span>
+            <span id="vol_2" style="display: block; margin-top: 5px;">+2.5 Voltage</span>
+            <span id="VCoreoff" style="display: block; margin-top: 5px;">VCORE Offset Voltage</span>
+            <span id="VCoreDrop" style="display: block; margin-top: 5px;">VCORE Droop Voltage</span>
+            
+            <span class="underlined" style="margin-top: 50px;"></span> 
+            <br> 
+            <span style="color: black; margin-top: -20px;" class="nochose">Would you like to save current setting as user defaults ?</span>
+            <span id="save1st" style="display: block; margin-top: 30px;">Save 1st User Defaults</span>
+            <span class="" id="load1st" style="display: block; margin-top: 5px;">Load 1st User Defaults</span>
+            <span id="save2st" style="display: block; margin-top: 5px;">Save 2st User Defaults</span>
+            <span class="" id="load2st" style="display: block; margin-top: 5px;">Load 2st User Defaults</span>  
+        </div>
+        <!-- Subscreen: Memory Timing Configuration -->
+        <div id="memTimingSub" style="display: none; width: 195%; margin-top: 10px;">
+          <span id="memTimingSubHead" style="color: black" class="nochose">Memory Timing</span>
+          <br>
+          <span class="underlined" style="margin-top: 0px; height: 5px; width: 95%;"></span>
+          <br>
+          <div id="memTimingList" style="display: flex; flex-direction: column; width: 100%; margin-top: 15px;">
+          </div>
+        </div>
+
+
+        <div class="systemdate" id="systemDate"><span>System Date</span></div>
+<br>
+        <div class="userHello" id="userHello" style="white-space: nowrap;"><img id="userAvatar" data-user-avatar src="" alt="avatar"><span>Welcome, <span id="userName" data-user-name>Guest</span>!</span></div>
+
+        <div class="systemdisk" id="systemDisk" style="display: none"><span>Hard drive</span></div>
+        <div class="systemlang" id="systemLang" style="display: none"><span>Language</span></div>
+      
+        <div class="systeminf" style="display: block">
+          <br>
+        <div style="display: flex;"> <div>BIOS Version </div> <div style="margin-left: 120px; margin-right: 20px;">:</div><div>760GM-HDV P1.20</div></div> 
+        <div style="display: flex; align-items: center; flex-wrap: nowrap;">
+          <div class="prosse">Processor Type</div>
+          <div style="margin-left: 13px; margin-right: 20px;">:</div>
+          <div>
+              AMD FX(tm)-8320 
+              <div style="display: inline-block;" id="coresall" >Eight-Core</div>  
+              Processor (64 bit)
+          </div>
+      </div>
+        <div style="display: flex;"> <div>Processor Speed </div> <div style="margin-left: 67px; margin-right: 20px;">:</div><div id="mhzcpu" >4000MHz</div></div>
+        <div style="display: flex;"> <div>Microcode Update </div> <div style="margin-left: 49px; margin-right: 20px;">:</div><div>600F20/6000822</div></div>
+        <div style="display: flex;"> <div>L1 Cache Size </div> <div style="margin-left: 102px; margin-right: 20px;">:</div><div>384KB</div></div>
+        <div style="display: flex;"> <div>L2 Cache Size </div> <div style="margin-left: 102px; margin-right: 20px;">:</div><div>8192KB</div></div>
+        <div style="display: flex;"> <div>L3 Cache Size </div> <div style="margin-left: 102px; margin-right: 20px;">:</div><div>8192KB</div></div>
+        <br>
+        <div style="display: flex;"> <div>Total Memory </div> <div style="margin-left: 119px; margin-right: 20px;">:</div><div>16GB Dual-Channel Memory Mode</div></div>
+        <br>
+        <div style="display: flex; padding-left: 40px;"> <div>DDR3_A1</div> <div style="margin-left: 168px; margin-right: 20px;">:</div><div>8192MB/667MHz DDR3_1333</div></div>
+        <div style="display: flex; padding-left: 40px;"> <div>DDR3_B1</div> <div style="margin-left: 168px; margin-right: 20px;">:</div><div>8192MB/667MHz DDR3_1333</div></div>              
+     </div>
+        
+       <div class="optionss" style="display: block"> 
+       <div id="sataone" style="display: block"> 
+        <span style="display: none">▶ SATA 1</span></div>
+        <span id="sata_2" style="display: none">▶ SATA 2</span>
+        <span id="sata_3" style="display: none">▶ SATA 3</span>
+        <span id="sata_4" style="display: none">▶ SATA 4</span>
+        <span id="sata_configr" style="display: none">▶ SATA Configuration</span>
+        <span id="system_inform" style="display: none">▶ System Information</span>
+      </div> 
+      
+    </div>
+      <div class="parameters">
+        <div class="time-display" style="display: flex;" id="timeDisplay">
+          <span class="brackets">[</span>
+          <span class="time-part" id="hoursPart">14</span> :
+          <span class="time-part" id="minutesPart">32</span> :
+          <span class="time-part" id="secondsPart">34</span>
+          <span class="brackets">]</span>
+        </div>
+        <div class="date-display" style="display: flex;" id="dateDisplay">
+          <span class="brackets">[</span>
+          <span class="date-part" id="dayPart">01</span> /
+          <span class="date-part" id="monthPart">01</span> /
+          <span class="date-part" id="yearPart">2025</span>
+          <span class="brackets">]</span>
+        </div>
+        <div class="paramOcTweak">
+          <span class="changeCpu" id="changeCpu" style="display: none">[Auto]</span>
+          <span class="noactive" id="changeCpu_1" style="display: block; margin-top: 3px; ">[210]</span>
+          <span class="noactive" id="changeCpu_2" style="display: block; margin-top: 6px; ">[100]</span>
+          <span class="" id="spredDisabled" style="display: block; margin-top: 10px; ">[Disabled]</span>
+          <span class="" id="bootEnabled" style="display: block; margin-top: 5px; " >[Enabled]</span>
+          <span class="" id="bootGuard" style="display: block; margin-top: 5px; ">[3]</span>
+          <span class="" id="allCores" style="display: block; margin-top: 5px;">[All Cores]</span>
+          <span class="" id="turbocoreAuto" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span class="" id="amdstateend" style="display: block; margin-top: 5px;">[Enabled]</span>
+          <span class="" id="amdapmm" style="display: block; margin-top: 5px;">[Enabled]</span>
+          <span class="noactive" id="procmax" style="display: block; margin-top: 30px;">x31.5 6300MHz</span>
+          <span class="noactive" id="northbrid" style="display: block; margin-top: 5px;">x31.0 6200MHz</span>
+          <span class="noactive" id="procmaxvol" style="display: block; margin-top: 5px;">1.5500 V</span>
+          <span id="multivol" style="display: block; margin-top: 5px;">[Manual]</span>
+          <span id="multipar" style="display: block; margin-top: 5px;">[x20.0 4000 MHz]</span>
+          <span id="multipvol" style="display: block; margin-top: 5px;">[1.4000 V]</span>
+          <span id="multiNB" style="display: block; margin-top: 5px;">[x10.0 2000 MHz]</span>
+          <span id="htbusspeed" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span id="htbuswidth" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span style="color: black; margin-top: 52px; width: 10px;" class="nochose hidden">123124124</span>
+            <br>
+            
+          <span id="memddr3" style="display: block; margin-top: 30px;">[667MHz DDDR3_1333]</span>
+          <span class="hidden" style="display: block; margin-top: 5px;">[Disabled]</span>
+          <span style="color: black; margin-top: 52px; width: 10px;" class="nochose hidden">123124124</span>
+          <br>
+          
+          <span id="onboarddiss" style="display: block; margin-top: 30px;">[Enabled]</span>
+          <span id="onboardcount" style="display: block; margin-top: 5px;">[2000]</span>
+          <span id="vol_1aut" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span id="vol_2aut" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span id="vcore_offaut" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span id="vcore_dropoff" style="display: block; margin-top: 5px;">[Auto]</span>
+          <span id="vcore_dropoff_1" style="display: block; margin-top: 5px;">[Auto]</span>
+        </div>
+        <div><span class="diskline" id="diskLine" style="display: none"> [1.44M, 3.5 in.]</span></div> <!-- Добавляем id для этой строки -->
+        <span id="lengua" style="display: none">[English]</span>
+      </div>
+
+      <div class="sata_configr" style="display: none">
+        <span style="color: black" class="nochose">
+          SATA Configuration</span>
+          <br>
+          <span class="underlined"></span>
+        <br>
+        <span>SATA Configuration</span>
+        <span style="display: block;" id="sataconf" class="confsatas">Configure SATA as</span>
+        <br>
+        <span>Hard Disk Write Protect</span>
+        <span>Sata Detect Time Out (Ses)</span>
+   </div>
+
+   
+
+   <div class="advancedslot" style="display: block">
+    <span id="advanshead" style="color: black; margin-top: -30px;" class="nochose">Advanced Settings</span>
+    <br>
+    <span class="underlined"></span> 
+    <span id="warnadvanc" style="display: block; margin-top: 30px; width: 180%; color: black;">WARNING: Setting wrong values in below sections may cause system to malfunction.</span>
+    <span id="advansCpuconf" style="display: block; margin-top: 30px;">▶ CPU Configuration</span>
+    <span id="advansChipconf" style="display: block; margin-top: 5px;">▶ Chipset Configuration</span>      
+    <span id="advansAcpicon" style="display: block; margin-top: 5px;">▶ ACPI Configuration</span>
+    <span id="advansStor" style="display: block; margin-top: 5px;">▶ Storage Configuration</span>
+    <span id="advansPci" style="display: block; margin-top: 5px;">▶ PCIPnP Configuration</span>
+    <span id="advansUsb" style="display: block; margin-top: 5px;">▶ USB Configuration</span>
+    <span id="biosadvans" style="color: black; margin-top: 30px;" class="nochose">BIOS Update Utility</span>
+    <br>
+    <span id="underlinadv" class="underlined"></span>
+    <span id="advansInstanflash" style="display: block; margin-top: 30px;">Instant Flash</span>
+
+    <div id="advancpuopen" class="advanccpucon" style="display: flex; flex-wrap: wrap;">
+      <span id="advansQuiet" style="width: 30%; margin-top: 5px;">Cool' n' Quiet</span>
+      <span id="advansQuiet1" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+      <span id="advansQuiet2" style="width: 30%; margin-top: 5px;">Secure Virtual Machine</span>
+      <span id="advansQuiet3" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+      <span id="advansEnha" style="width: 30%; margin-top: 5px;">Enhanced Halt State(C1E)</span>
+      <span id="advansEnhapar" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+      <span id="advansThrot" style="width: 30%; margin-top: 5px;">CPU Thermal Throttle</span>
+      <span id="advansThrotpar" style="width: 50%; margin-top: 5px;">[Auto]</span>
+
+      <div id="ChipsetConf" class="ChipsetConf" style="display: flex; flex-wrap: wrap;">
+      <span id="advansOnboard" style="width: 30%; margin-top: 5px;">Onboard HD Audio</span>
+      <span id="advansOnboardAuto" style="width: 50%; margin-top: 5px;">[Auto]</span>
+      <span id="advansFront" style="width: 29%; margin-top: 5px; margin-left: 1%;">Front Panel</span>
+      <span id="advansFrontHD" style="width: 50%; margin-top: 5px;">[HD]</span>
+      <span id="advansOnboardLan" style="width: 30%; margin-top: 5px;">Onboard Lan</span>
+      <span id="advansOnboardLanEnab" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+      <span id="advansPrimary" style="width: 30%; margin-top: 5px;">Primary Graphics Adapter</span>
+      <span id="advansPrimaryPci" style="width: 50%; margin-top: 5px;">[PCI]</span>
+      <br>
+      <br>
+      <span id="advansInternal" style="width: 30%; margin-top: 5px;">Internal Graphics Mode</span>
+      <span id="advansInternalUma" style="width: 50%; margin-top: 5px;">[UMA]</span>
+      <span id="advansShare" style="width: 30%; margin-top: 5px;">Share Memory</span>
+      <span id="advansShareAut" style="width: 50%; margin-top: 5px;">[Auto]</span>
+      <span id="advansOnboardHdmi" style="width: 30%; margin-top: 5px;">Onboard HDMI HD Audio</span>
+      <span id="advansOnboardHdmiEn" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+      <span class="noactive" id="advansSurround" style="width: 30%; margin-top: 5px;">Surround View</span>
+      <span class="noactive" id="advansSurround2" style="width: 50%; margin-top: 5px;">[Auto]</span> </div>
+
+      <div id="AcpiConfigg" class="AcpiConfigg" style="display: flex; flex-wrap: wrap;">
+        <span id="advansSuspend" style="width: 30%; margin-top: 5px;">Suspend To RAM</span>
+        <span id="advansSuspendAuto" style="width: 50%; margin-top: 5px;">[Auto]</span>
+        <span id="advansCheckReady" style="width: 30%; margin-top: 5px;">Check Ready Bit</span>
+        <span id="advansCheckReadyAuto" style="width: 50%; margin-top: 5px;">[Auto]</span>
+        <span id="advansAwayMode" style="width: 30%; margin-top: 5px;">Away Mode Support</span>
+        <span id="advansAwayMDisabled" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+        <br>
+        <br>
+        <span id="advansRestore" style="width: 30%; margin-top: 5px;">Restore on AC/Power Loss</span>
+        <span id="advansRestorePower" style="width: 50%; margin-top: 5px;">[Power Off]</span>
+        <span id="advansPCIDevices" style="width: 30%; margin-top: 5px;">PCI Devices Power On</span>
+        <span id="advansPCIDevicesDisb" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+        <span id="advansKeyboard" style="width: 30%; margin-top: 5px;">PS/2 Keyboard Power ON</span>
+        <span id="advansKeyboardDisa" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+        <span id="advansRTC" style="width: 30%; margin-top: 5px;">RTC Alarm Power On</span>
+        <span id="advansRTCByOs" style="width: 50%; margin-top: 5px;">[By OS]</span>
+        <span id="advansRTCDate" style="width: 29%; margin-top: 5px; margin-left: 1%; display: none;">RTC Alarm Date</span>
+        <span id="advansRTCDatechose" style="width: 50%; margin-top: 5px; display: none;">[Every Day]</span>
+        <span id="advansRTCTime" style="width: 29%; margin-top: 5px; margin-left: 1%; display: none;">RTC Alarm Time</span>
+        <span id="advansRTCByOstimechose" style="width: 50%; margin-top: 5px; display: none;">
+    <span id="advansRTCByOstimechose2" style="display: none; flex-wrap: wrap;">[<span id="rtcHours">00</span>:<span id="rtcMinutes">00</span>:<span id="rtcSeconds">00</span>]</span> 
+        </span>
+        <br>
+        <br>
+        <span class="" id="advansACPI" style="width: 30%; margin-top: 5px;">ACPI HPET Table</span>
+        <span class="" id="advansACPIEnabl" style="width: 50%; margin-top: 5px;">[Enabled]</span> 
+        <span class="" id="advansDeep" style="width: 30%; margin-top: 5px;">Deep Sleep</span>
+        <span class="" id="advansDeepDisa" style="width: 50%; margin-top: 5px;">[Disabled]</span> </div>
+
+        <div id="StorageConf" class="StorageConf" style="display: flex; flex-wrap: wrap;">
+          <span id="advansOnboardSata" style="width: 30%; margin-top: 5px;">Onboard SATA Controller</span>
+          <span id="advansOnboSataEnb" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+          <span id="advansSataOper" style="width: 29%; margin-top: 5px; margin-left: 1%;">SATA Operation Mode</span>
+          <span id="advansSataAhci" style="width: 50%; margin-top: 5px;">[AHCI]</span>
+          <span id="advansSATaComb" style="width: 30%; margin-top: 5px;">SATA IDE Combined Mode</span>
+          <span id="advansCombEnab" style="width: 50%; margin-top: 5px;">[Enabled]</span>
+          <br>
+          <br>
+          <span id="advansSata2_1" style="width: 30%; margin-top: 5px;">▶ SATA II_1</span>
+          <span id="advans2_1Not" style="width: 50%; margin-top: 5px;">[Not Detected]</span>
+          <span id="advansSata2_2" style="width: 30%; margin-top: 5px;">▶ SATA II_2</span>
+          <span id="advans2_2Not" style="width: 50%; margin-top: 5px;">[Not Detected]</span>
+          <span id="advansSata2_3" style="width: 30%; margin-top: 5px;">▶ SATA II_3</span>
+          <span id="advans2_3CD" style="width: 50%; margin-top: 5px;">[ATAPI CDROM]</span>
+          <span id="advansSata2_4" style="width: 30%; margin-top: 5px;">▶ SATA II_4</span>
+          <span id="advansSataDisk" style="width: 50%; margin-top: 5px;">[Hard Disk]</span> </div>
+
+          <div id="StorageSata2_2" class="StorageSata2_2" style="display: none; flex-wrap: wrap;">
+            <span id="advansDevicesata" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+            <span id="advansHarddisk" class="noactive" style="width: 90%; margin-top: 5px;">:Hard Disk</span>
+            <span id="advansVendor" class="noactive" style="width: 10%; margin-top: 5px;">Vendor</span>
+            <span id="advansSamsung" class="noactive" style="width: 90%; margin-top: 5px;">:Samsung SSD 860 EVO 250GB</span>
+            <span id="advansSIzee" class="noactive" style="width: 10%; margin-top: 5px;">Size</span>
+            <span id="advansSize_250" class="noactive" style="width: 90%; margin-top: 5px;">:250.0GB</span>
+            <span id="advansSpeeds" class="noactive" style="width: 10%; margin-top: 5px;">SATA Speed</span>
+            <span id="advans_30" class="noactive" style="width: 90%; margin-top: 5px;">:3.0Gbps</span>
+            <span id="advansNCqq" class="noactive" style="width: 10%; margin-top: 5px;">NCQ</span>
+            <span id="advansNSupp" class="noactive" style="width: 90%; margin-top: 5px;">:Supported</span>
+            <br>
+            <br>
+            <span id="advansHotPlug" style="width: 30%; margin-top: 5px;">Hot Plug Support</span>
+            <span id="advansDisablPlug" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+            <span id="advansSata2_2Auto" style="width: 30%; margin-top: 5px;">SATA II_1</span>
+            <span id="advans2_2AUto" style="width: 50%; margin-top: 5px;">[Auto]</span> 
+            <span id="advansSMart" style="width: 30%; margin-top: 5px;">S.M.A.R.T.</span>
+            <span id="advansSmarEnab" style="width: 50%; margin-top: 5px;">[Enabled]</span> 
+          </div>
+
+          <div id="StorageSata2_22" class="StorageSata2_22" style="display: none; flex-wrap: wrap;">
+            <span id="advansDevicesata2" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+            <span id="advansHarddisk2" class="noactive" style="width: 90%; margin-top: 5px;">:Not Detected</span>
+            <br>
+            <br>
+            <span id="advansHotPlug2" style="width: 30%; margin-top: 5px;">Hot Plug Support</span>
+            <span id="advansDisablPlug2" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+            <span id="advansSata2_2Auto2" style="width: 30%; margin-top: 5px;">SATA II_1</span>
+            <span id="advans2_2AUto2" style="width: 50%; margin-top: 5px;">[Auto]</span> 
+            <span id="advansSMart2" style="width: 30%; margin-top: 5px;">S.M.A.R.T.</span>
+            <span id="advansSmarEnab2" style="width: 50%; margin-top: 5px;">[Enabled]</span> 
+          </div>
+
+
+          <div id="StorageSata2_23" class="StorageSata2_23" style="display: none; flex-wrap: wrap; ">
+             <div id="onSata23" class="onSata23" style="display: none; flex-wrap: wrap; width: 1500px;">
+              <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+              <span id="advansHarddisk23" class="noactive" style="width: 90%; margin-top: 5px;">:Not Detected</span> <br><br>
+            </div>
+
+            <div id="offsata23" class="offsata23" style="display: flex; flex-wrap: wrap;">
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+            <span id="advansHarddisk3" class="noactive" style="width: 90%; margin-top: 5px;">:ATAPI CDROM </span>
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">Vendor</span>
+            <span id="advansHarddisk3" class="noactive" style="width: 90%; margin-top: 5px;">:HL-DI-ST DVDRAM GH22NS40</span>
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">LBA Mode</span>
+            <span id="advansHarddisk3" class="noactive" style="width: 90%; margin-top: 5px;">:Supported</span>
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">PIO Mode</span>
+            <span id="advansPio3" class="noactive" style="width: 90%; margin-top: 5px;">:4</span>
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">Async DMA</span>
+            <span id="advansHarddisk3" class="noactive" style="width: 90%; margin-top: 5px;">:MultiWord DMA-2</span>
+            <span id="advansDevicesata3" class="noactive" style="width: 10%; margin-top: 5px;">Ultra DMA</span>
+            <span id="advansHarddisk3" class="noactive" style="width: 90%; margin-top: 5px;">:Ultra DMA-5</span></div>
+            <br>
+            <br>
+            <span id="advansType" style="width: 30%; margin-top: 5px;">Type</span>
+            <span id="advansDisablPlug3" style="width: 50%; margin-top: 5px;">[Disabled]</span>
+            <span id="advansPIO" style="width: 30%; margin-top: 5px;">PIO Mode</span>
+            <span id="advans2_2AUto3" style="width: 50%; margin-top: 5px;">[Auto]</span> 
+            <span id="advansDMA" style="width: 30%; margin-top: 5px;">DMA Mode</span>
+            <span id="advansSmarEnab3" style="width: 50%; margin-top: 5px;">[Enabled]</span> 
+          </div>
+
+          
+          <div id="StorageSata2_24" class="StorageSata2_24" style="display: none; flex-wrap: wrap; ">
+            <div id="onSata24" class="onSata24" style="display: none; flex-wrap: wrap; width: 1500px;">
+             <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+             <span id="advansHarddisk24" class="noactive" style="width: 90%; margin-top: 5px;">:Not Detected</span> <br><br>
+           </div>
+
+           <div id="offsata24" class="offsata24" style="display: flex; flex-wrap: wrap; " >
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">Device</span>
+           <span id="advansHarddisk4" class="noactive" style="width: 90%; margin-top: 5px; ">:Hard Disk</span>
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">Vendor</span>
+           <span id="advansHarddisk4" class="noactive" style="width: 90%; margin-top: 5px;">:TOSHIBA DT01ACA100</span>
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">Size</span>
+           <span id="advansHarddisk4" class="noactive" style="width: 90%; margin-top: 5px;">:1.0TB</span>
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">LBA Mode</span>
+           <span id="advansHarddisk4" class="noactive" style="width: 90%; margin-top: 5px;">:Supported</span>
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">Block Mode</span>
+           <span id="advansHarddisk4" class="noactive" style="width: 90%; margin-top: 5px;">:16 Sectors</span>
+           <span id="advansDevicesata4" class="noactive" style="width: 10%; margin-top: 5px;">PIO Mode</span>
+           <span id="advansPioNum" class="noactive" style="width: 90%; margin-top: 5px;">:4</span>
+           <span id="advansAsync4" class="noactive" style="width: 10%; margin-top: 5px;">Async DMA</span>
+           <span id="advansDma4" class="noactive" style="width: 90%; margin-top: 5px;">:MultiWord DMA-2</span>
+           <span id="advansAsync4" class="noactive" style="width: 10%; margin-top: 5px;">Ultra DMA</span>
+           <span id="advansDma4" class="noactive" style="width: 90%; margin-top: 5px;">:Ultra DMA-6</span>
+           <span id="advansAsync4" class="noactive" style="width: 10%; margin-top: 5px; max-width: 400px;">S.M.A.R.T</span>
+           <span id="advansDma4" class="noactive" style="width: 90%; margin-top: 5px; width: 850px;">:Supported</span></div>
+
+           <span id="advansType4" style="width: 30%; margin-top: 5px; ">Type</span>
+           <span id="advansDisablPlug4" style="width: 70%; margin-top: 5px;">[Auto]</span>
+           <span id="advansLba4" style="width: 30%; margin-top: 5px;">LBA/Large Mode</span>
+           <span id="advanslba_4" style="width: 70%; margin-top: 5px;">[Auto]</span> 
+           <span id="advansblocktran" style="width: 30%; margin-top: 5px;">Block (Multi-Sector Transfer)</span>
+           <span id="advansBlocktransfer" style="width: 70%; margin-top: 5px;">[Auto]</span> 
+           <span id="advansPIO4" style="width: 30%; margin-top: 5px;">PIO Mode</span>
+           <span id="advans2_2AUto4" style="width: 70%; margin-top: 5px;">[Auto]</span> 
+           <span id="advansDMA4" style="width: 30%; margin-top: 5px;">DMA Mode</span>
+           <span id="advansDmb4" style="width: 70%; margin-top: 5px;">[Enabled]</span> 
+           <span id="advansSmart4" style="width: 30%; margin-top: 5px;">S.M.A.R.T</span>
+           <span id="advansSmarDisab4" style="width: 70%; margin-top: 5px;">[Disabled]</span> 
+         </div>
+
+         <div id="PCIPnPConfigg" class="PCIPnPConfigg" style="display: none; flex-wrap: wrap;">
+          <span id="advansPCItim" style="width: 70%; margin-top: 5px;">PCI Latency Timer</span>
+          <span id="advanspcitim32" style="width: 30%; margin-top: 5px;">[32]</span>
+          <span id="advansPsiIde" style="width: 70%; margin-top: 5px;">PCI IDE BusMaster</span>
+          <span id="advansIdepsiEn" style="width: 30%; margin-top: 5px;">[Enabled]</span>
+   </div>
+
+   <div id="UsbConfigg" class="UsbConfigg" style="display: none; flex-wrap: wrap;">
+    <span id="advansUsbcont" style="width: 40%; margin-top: 5px;">USB Controller </span>
+    <span id="advansUsbEnab" style="width: 60%; margin-top: 5px;">[Enabled]</span>
+    <span id="advansUsb2_0" style="width: 40%; margin-top: 5px;">USB 2.0 Support</span>
+    <span id="advansUsb2_0Enab" style="width: 60%; margin-top: 5px;">[Enabled]</span>
+    <span id="advansUsbLegacy" style="width: 40%; margin-top: 5px;">Legacy USB Support</span>
+    <span id="advansLegacyEnab" style="width: 60%; margin-top: 5px;">[Enabled]</span>
+    <br>
+    <br>
+    <span id="advansKeyboaUsb" style="width: 40%; margin-top: 5px;">USB Keyboard/Remote Power On</span>
+    <span id="advansKeyboaDisabl" style="width: 60%; margin-top: 5px;">[Disabled]</span>
+    <span id="advansMousePower" style="width: 40%; margin-top: 5px;">USB Mouse Power On</span>
+    <span id="advansMouseDisabl" style="width: 60%; margin-top: 5px;">[Disabled]</span>
+</div>
+
+    </div>
+    </div>
+
+
+ <div id="MonitorConfig" class="MonitorConfig" style="display: block"> 
+      <span id="advanshead45" style="color: black; margin-top: -30px;" class="nochose">Hardware Health Event Monitoring</span>
+      <br>
+      <span class="underlined" style="margin-top: 0px; height: 5px; width: 95%;"></span> 
+    <div id="systeninff" class="systeminf" style="display: block">
+      <div style="display: flex;"> <div>CPU Temperature</div> <div style="margin-left: 509px; margin-right: 20px;">:</div><div id="gradysF">44°C/111°F</div></div> 
+      <div style="display: flex;"> <div class="prosse">M/B Temperature</div><div style="margin-left: 373px; margin-right: 20px;">:</div><div>31°C/87°F</div></div>
+      <br>
+      <div style="display: flex;"> <div>CPU Fan Speed </div> <div style="margin-left: 543px; margin-right: 20px;">:</div><div id="1797rpm">1797 RPM</div></div>
+      <div style="display: flex;"> <div>Chassis Fan1 Speed </div> <div style="margin-left: 455px; margin-right: 20px;">:</div><div id="1827rpm">1827 RPM</div></div>
+      <div style="display: flex;"> <div>Chassis Fan2 Speed </div> <div style="margin-left: 455px; margin-right: 20px;">:</div><div>0 RPM</div></div>
+      <br>
+      <div style="display: flex;"> <div>Vcore</div> <div style="margin-left: 685px; margin-right: 20px;">:</div><div id="1392V">1.392 V</div></div>
+      <div style="display: flex;"> <div>+ 3.30V</div> <div style="margin-left: 650px; margin-right: 20px;">:</div><div>3.342 V</div></div>
+      <div style="display: flex;"> <div>+ 5.00V</div> <div style="margin-left: 650px; margin-right: 20px;">:</div><div>5.088 V</div></div>
+      <div style="display: flex; "> <div>+ 12.00V</div> <div style="margin-left: 632px; margin-right: 20px;">:</div><div>12.192 V</div></div>            
+   </div>
+  <br>
+   
+      <div style="display: flex;" id="otpenb"> ▶ CPU Fan Setting</div>
+      <div style="display: flex;" id="otpenb1"> ▶ Chassis Fan 1 Setting</div>
+      <div style="display: flex;" id="otpenb2"> ▶ Chassis Fan 2 Setting</div>
+      <div style="display: flex;" id="otp"><div>OTP</div> <div style="margin-left: 732px; margin-right: 20px;"></div><div id="otpenabl" >[Enabled]</div></div>
+      <br>
+      <div style="display: flex; width: 1100px; " id="caseopen"><div style="margin-right: 490px;">Case Open Feature </div> <div></div><div id="casedisab" >[Disabled]</div></div>
+
+    <div id="cpufansettin" style="display: none;">
+        <div style="display: flex; width: 195%;" id="spufan" ><div style="margin-right: 450px;">CPU Fan Setting</div> <div></div><div id="cputraget_1">[Automatic mode]</div></div>
+        <div style="display: flex; width: 195%;" id="targetcpu" ><div style="margin-right: 282px; margin-left: 37px;">Target CPU Temperature</div> <div></div><div id="cputraget_2">[65°C/149°F]</div></div>
+        <div style="display: flex; width: 195%;" id="targetfan" ><div style="margin-right: 394px; margin-left: 37px;">Target Fan Speed</div> <div></div><div id="cputraget_3">[Level 1]</div></div>
+      </div>
+      <div id="cpufansettin1" style="display: none;">
+        <div style="display: flex; width: 195%;" id="spufan1" ><div style="margin-right: 413px;">CPU Fan 1 Setting</div> <div></div><div id="cputraget_11">[Automatic mode]</div></div>
+        <div style="display: flex; width: 195%;" id="targetcpu1" ><div id="targetmem" style="margin-right: 282px; margin-left: 37px;">Target CPU Temperature</div> <div></div><div id="cputraget_21">[65°C/149°F]</div></div>
+        <div style="display: flex; width: 195%;" id="targetfan1" ><div style="margin-right: 394px; margin-left: 37px;">Target Fan Speed</div> <div></div><div id="cputraget_31">[Level 1]</div></div>
+      </div>
+      <div id="cpufansettin2" style="display: none;">
+        <div style="display: flex; width: 195%;" id="spufan2" ><div style="margin-right: 413px;">CPU Fan 2 Setting</div> <div></div><div id="cputraget_12">[Automatic mode]</div></div>
+        <div style="display: flex; width: 195%;" id="targetcpu2" ><div style="margin-right: 282px; margin-left: 37px;">Target CPU Temperature</div> <div></div><div id="cputraget_22">[65°C/149°F]</div></div>
+        <div style="display: flex; width: 195%;" id="targetfan2" ><div style="margin-right: 394px; margin-left: 37px;">Target Fan Speed</div> <div></div><div id="cputraget_32">[Level 1]</div></div>
+      </div>
+      
+  </div>
+
+
+  <div id="BootConfig" class="MonitorConfig" style="display: block"> 
+    <span id="advanshead453" style="color: black; margin-top: -30px;" class="nochose">Boot Settings</span>
+    <br>
+    <span class="underlined" style="margin-top: 0px; height: 5px; width: 95%;"></span> 
+    <br>
+    <div style="display: flex; width: 190%; " id="bootSett" ><div style="margin-right: 450px;">▶ Boot Settings Configuration </div> <div></div><div></div></div>
+    <br>
+    <div style="display: flex; width: 195%;" id="boot1st" ><div style="margin-right: 450px;">1st Boot Device</div> <div></div><div id="satatoshib_1">[SATA:PS-TOSHIBA DT01ACA100]</div></div>
+    <div style="display: flex; width: 190%;" id="bootHardDisk"><div style="margin-right: 450px;">▶ Hard Disk Drivers</div> <div></div><div></div></div>
+    <div style="display: none; width: 190%;" id="pashalka1"><div style="margin-right: 450px; margin-left: 450px; margin-top: 150px; cursor: pointer;">▶ New Design</div> <div></div><div></div></div>
+
+    <div id="harddiskdriv" style="display: none;">
+      <div style="display: flex; width: 195%;" id="stsat1" ><div style="margin-right: 450px;">1st Drive</div> <div></div><div id="satatoshib_2">[SATA:PS-TOSHIBA DT01ACA100]</div></div>
+      <div style="display: flex; width: 195%;" id="ndsam2" ><div style="margin-right: 450px;">2nd Drive</div> <div></div><div id="satatoshib_3">[AHCI:PO-Samsung SSD 860 EVO 250]</div></div>
+    </div>
+
+    <div id="bootconfig1" style="display: none;">
+      <div style="display: flex; width: 195%;" id="fulllog" ><div style="margin-right: 450px;">Full Screen Logo</div> <div></div><div id="bootload_1">[Disabled]</div></div>
+      <div style="display: none; width: 195%;" id="hiddeAddon" ><div style="margin-right: 391px; margin-left: 40px;">AddOn ROM Display</div> <div></div><div id="bootload_hiddem">[Enabled]</div></div>
+      <div style="display: flex; width: 195%;" id="bootfrom" ><div style="margin-right: 356px;">Boot From Onboard LAN</div> <div></div><div id="bootload_2">[Enabled]</div></div>
+      <div style="display: flex; width: 195%;" id="bootnum" ><div style="margin-right: 469px;">Bootup Num-Lock</div> <div></div><div id="bootload_3">[OFF]</div></div>
+    </div>
+</div>
+
+
+
+
+<div id="SecuritytConfig" class="MonitorConfig" style="display: block"> 
+  <span id="advanshead453" style="color: black; margin-top: -30px;" class="nochose">Security Settings</span>
+  <br>
+  <span class="underlined" style="margin-top: 0px; height: 5px; width: 95%;"></span> 
+<div class="systeminf" style="display: block; height: 15%;">
+    <div style="display: flex; width: 1150px;" id="passUserSuperid" > <div>Supervisor Password</div> <div style="margin-left: 439px; margin-right: 20px;">:</div><div id="notinstallpass1">Not Installed</div></div> 
+    <div style="display: flex; width: 1150px;" class="" id="passUserid"> <div class="prosse" id="userpasswordd">User Password</div><div style="margin-left: 373px; margin-right: 20px;">:</div><div id="notinstallpass">Not Installed</div></div>           
+ </div>
+  <br>
+  <div style="display: flex;" id="ChangeSett">Change Supervisor Password</div>
+  <div style="display: flex;" id="ChangeUser">Change User Password</div>
+</div>
+ 
+<div id="ExitConfig" class="MonitorConfig" style="display: block"> 
+  <span id="advanshead453" style="color: black; margin-top: -30px;" class="nochose">Exit Options</span>
+  <br>
+  <span class="underlined" style="margin-top: 0px; height: 5px; width: 95%;"></span> 
+  <div style="display: flex;" id="saveChanges" >Save Changes and Exit</div>
+  <div style="display: flex;" id="DiscardChangesAExit">Discard Changes and Exit</div>
+  <div style="display: flex;" id="DiscardChan">Discard Changes</div>
+  <br>
+  <div style="display: flex;" id="LoadBios">Load BIOS Defaults</div>
+  <div style="display: flex;" id="LoadPerfor">Load Performance Setup Default</div>
+  <div style="display: flex;" id="LoadPowerSav">Load Power Saving Setup Default</div>
+</div>
+
+
+<!-- Окно с заданиями -->
+<div id="taskWindow">
+  <h2>Список завдань</h2>
+  <!-- Баллы, которые увеличиваются при выполнении заданий -->
+  <div id="pointsDisplay">Бали: 0</div>
+  <div id="pvpPanel" style="border:1px solid #00030c; padding:10px; margin:10px 0; background:#000000;">
+    <div style="font-weight:700; margin-bottom:6px;">PvP Battle</div>
+    <div id="pvpOpponentDisplay" style="font-size:0.82rem; margin-bottom:6px;">Суперник: немає активного PvP.</div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+      <input id="pvpTargetFirstName" type="text" placeholder="Ім'я суперника" style="padding:4px 6px; border:1px solid #8aa0ff;">
+      <input id="pvpTargetLastName" type="text" placeholder="Прізвище суперника" style="padding:4px 6px; border:1px solid #8aa0ff;">
+      <button id="pvpSendInviteBtn" type="button">Надіслати запрошення</button>
+      <button id="pvpRefreshBtn" type="button">Оновити PvP</button>
+      <button id="pvpLeaveBattleBtn" type="button">Покинути бій</button>
+    </div>
+    <div id="pvpBattleStatus" style="font-size:0.82rem; margin-bottom:6px;">Активного PvP бою немає.</div>
+    <div id="pvpIncomingInvites" style="display:grid; gap:6px;"></div>
+  </div>
+  <ul id="taskList"></ul>
+  <button id="closeTaskWindow">Закрити</button>
+  <button id="restartball">Оновити завдання</button>
+</div>
+
+
+</div>
+    </div>
+      <!-- Информация -->
+      <div class="alert hidden" ><!-- Начально скрыт -->
+        <div class="alertramka"><div class="alerttext">
+          <div class="disab" id="disabl"></div>
+          
+          <div class="kinn" id="kinnn"></div>
+          
+          <div class="minn" id="minnn"></div>
+        </div>
+        <div class="optionsalert"></div>
+        </div>
+      </div>
+
+      <div class="alert_1 hidden" ><!-- Начально скрыт -->
+        <div class="alertramka_1"><div class="alerttext_1">
+          <div class="englo" id="option1"></div>
+          <div class="autod" id="option2"></div>
+          <div class="autod3" id="option3"></div>
+          <div class="autod4" id="option4"></div>
+          <div class="autod5" id="option5"></div>
+          <div class="autod6" id="option6"></div>
+          <div class="autod7" id="option7"></div>
+          <div class="autod8" id="option8"></div>
+          <div class="autod9" id="option9"></div>
+          <div class="autod10" id="option10"></div>
+          <div class="autod11" id="option11"></div>
+          <div class="autod12" id="option12"></div>
+          <div class="autod13" id="option13"></div>
+          <div class="autod14" id="option14"></div>
+          <div class="autod15" id="option15"></div>
+          <div class="autod16" id="option16"></div>
+        </div>
+        <div class="optionsalert">Options</div>
+        </div>
+      </div>
+      
+
+            <!-- Memory Timing Options Popup ("Плашка выбора") -->
+      <div class="alert_1 hidden" id="memTimingAlert">
+        <div class="alertramka_1">
+          <div class="alerttext_1" id="memTimingAlertOptions" style="max-height: 290px; overflow-y: auto;">
+          </div>
+          <div class="optionsalert">Options</div>
+        </div>
+      </div>
+
+       <div class="sata_alert" style="display: none;"><!-- Начально скрыт -->
+        <div class="alertramka"><div class="alerttext">
+          <div class="disab" id="disabl">Manual</div>
+          
+          <div class="compat" id="kinnn">Auto</div>
+          
+        </div>
+        <div class="optionsalert">Options</div>
+        </div>
+      </div>
+
+  <div class="ramkaa">
+    <p>Use [ENTER], [TAB] or [SHIFT+TAB] to select a field.</p>
+    <p>Use [+] or [-] to configure system Time.</p>
+    <div class="ramkaaa" style="font-size: 1.5rem;">
+      <p>←→ Select Screen</p>
+      <p>↑↓ Select item</p>
+      <p>+- Change Field</p>
+      <p>Tab Select Field</p>
+      <p>F1 General Help</p>
+      <p>F10 Save and Exit</p>
+      <p>ESC Exit</p>
+    </div>
+  </div>
+<div class="footer">
+  <div class="amer" id="avtor">v02.67C (C) Copyright 1985-2009, American Megatrends, Inc.</div>
+</div>
+</body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+  function setUserNameText(name) {
+    const userNameElement = document.getElementById('userName') || document.querySelector('[data-user-name]');
+    if (userNameElement) {
+      userNameElement.textContent = name;
+    }
+  }
+
+  // Ждём загрузки auth_helper.js и заполняем имя пользователя
+  async function fillUserName() {
+    try {
+      // Ждём загрузки auth_helper.js
+      let attempts = 0;
+      while (typeof auth === 'undefined' && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      
+      // Если auth всё ещё не загружена, используем default
+      if (typeof auth === 'undefined') {
+        console.warn('Auth helper not loaded');
+        setUserNameText('User');
+        return;
+      }
+      
+      console.log('Auth object:', auth);
+      console.log('Auth.isAuthenticated:', auth.isAuthenticated);
+      console.log('Auth.user:', auth.user);
+      
+      // Убеждаемся, что checkAuth() выполнена (может быть выполнена из auth_helper.js)
+      if (!auth.isAuthenticated && auth.user === null) {
+        console.log('Calling checkAuth()...');
+        await auth.checkAuth();
+        console.log('After checkAuth - Auth object:', JSON.stringify(auth));
+        console.log('After checkAuth - Auth.user keys:', Object.keys(auth.user || {}));
+        console.log('After checkAuth - Full user object:', auth.user);
+      }
+      
+      if (auth.isAuthenticated && auth.user) {
+        console.log('Getting user data...');
+        console.log('full_name:', auth.user.full_name);
+        console.log('first_name:', auth.user.first_name);
+        console.log('last_name:', auth.user.last_name);
+        const fullName = (auth.user.full_name || '').trim();
+        const firstLast = `${auth.user.first_name || ''} ${auth.user.last_name || ''}`.trim();
+        const userName = (auth.user.user_name || '').trim();
+        const displayName = fullName || firstLast || userName || 'User';
+        setUserNameText(displayName);
+        console.log('Username filled:', displayName);
+      } else {
+        console.log('Not authenticated or user is null');
+        setUserNameText('User');
+      }
+    } catch (e) {
+      console.error('Error filling username:', e);
+      setUserNameText('User');
+    }
+  }
+  
+  // Начинаем заполнять имя при загрузке документа
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fillUserName);
+  } else {
+    fillUserName();
+  }
+
+
+  document.addEventListener("keydown", function(event) {
+  if (event.key === "F1") {
+    event.preventDefault(); // Отменяем стандартное действие
+    console.log("F1 нажата, но справка не открылась.");
+  }
+  if (event.key === "Tab") {
+    event.preventDefault(); 
+    console.log("Tab нажата, но справка не открылась.");
+  }
+  if (event.key === "F10") {
+    event.preventDefault(); 
+    console.log("Tab нажата, но справка не открылась.");
+  }
+  if (event.key === "F6") {
+    event.preventDefault(); 
+    console.log("Tab нажата, но справка не открылась.");
+  }
+  if (event.key === "F7") {
+    event.preventDefault(); 
+    console.log("F7 нажата, но справка не открылась.");
+  }
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        event.preventDefault(); // Отменяем стандартное поведение (прокрутку)
+    }
+});
+
+
+
+});
+
+</script>
+
+<script src="securityBios.js"></script>
+<script src="scripts/script.js"></script>
+<script src="scripts/user_change.js"></script>
+</body>
+</html>

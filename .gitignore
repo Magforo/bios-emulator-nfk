@@ -1,0 +1,20 @@
+# База даних та резервні копії
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+data/backups/
+
+# Логи безпеки, паролі та тимчасові файли
+security_logs/*.log
+security_logs/*.json
+*.log
+userdata.txt
+passwords.txt
+
+# Налаштування IDE та чернетки
+.vscode/
+456456.html
+bios — копия.css
+test.js
+.DS_Store
+Thumbs.db

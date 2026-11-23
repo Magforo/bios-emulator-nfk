@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Авторизація</title>
+  <meta charset="utf-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;900&family=Raleway:wght@400;600;700&display=swap');
+    body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #f5f8f0;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+    }
+    .left-section {
+        background-color: #ffffdb; /* Фон до середины */
+        flex: 1; /* Занимает половину экрана */
+        display: flex;
+        justify-content: center; /* Центровка по горизонтали */
+        align-items: center; /* Центровка по вертикали */
+    }
+    .info {
+      font-size: 2rem;
+      color: orange;
+      font-weight: bold;
+      text-align: left;
+      height: 60%;
+      width: 56%;
+      position: absolute;
+      bottom: 0; /* Ставим внизу экрана */
+      white-space: pre-wrap; /* Разрывы строк */
+      overflow: hidden;
+      line-height: 1.6;
+    }
+    .right-section {
+        flex: 0.62; /* Занимает вторую половину экрана */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center; /* Центровка по горизонтали */
+        padding-right: 50px; /* Отступ от правого края */
+        padding-top: 300px;
+    }
+    h2#greeting {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .menu {
+        display: flex; /* Горизонтальное расположение кнопок */
+        gap: 20px; /* Расстояние между кнопками */
+    }
+    #next {
+        color: white;
+        transition: 250ms;
+        background: #2b0fcc;
+        padding: 12px;
+        border: none;
+        border-radius: 35px;
+        cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1rem;
+        width: 220px;
+    }
+    #next:hover {
+        background: #5538f8;
+    }
+    .text-container {
+      font-size: 1.5rem;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 80%;
+      height: 90%;
+    }
+
+    .fade-out {
+      animation: fadeOut 1s forwards; /* Плавное исчезновение */
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    /* Стили для надписи "MartynenkoProject" */
+    .project-name {
+      font-size: 1rem;
+      color: orange; /* Цвет текста */
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10; /* Чтобы текст был поверх */
+    }
+
+    .session-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      max-width: 360px;
+      background: #102a9c;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(16, 42, 156, 0.3);
+      font-size: 0.92rem;
+      line-height: 1.3;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 220ms ease, transform 220ms ease;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .session-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Левая секция -->
+  <div class="left-section">
+    <div class="info" id="textContainer"></div>
+  </div>
+  <!-- Правая секция -->
+  <div class="right-section">
+    <h2 id="greeting">Вхід</h2>
+    <div class="menu">
+      <button id="next" onclick="location.href='login.html'">Увійти</button>
+      <button id="next" onclick="location.href='registraion.html'">Зареєструватися</button>
+    </div>
+    <br>
+    <div class="menu">
+        <label onclick="location.href='rules.html'" style="cursor: pointer; text-decoration: underline;">Умови використання</label>
+        <label onclick="location.href='bios.html?guest=1'" style="cursor: pointer; text-decoration: underline;">Спочатку спробувати</label>
+  </div>
+  </div>
+  <!-- Добавлена надпись MartynenkoProject -->
+  <div class="project-name">MartynenkoProject ●</div>
+  <div id="sessionToast" class="session-toast" aria-live="polite"></div>
+
+  <script>
+    const greetingElement = document.getElementById('greeting');
+
+    // Получаем текущее время
+    const now = new Date();
+    const hours = now.getHours();
+
+    // Логика смены текста
+    if (hours >= 7 && hours < 12) {
+      greetingElement.textContent = 'Добрий ранок';
+    } else if (hours >= 12 && hours < 17) {
+      greetingElement.textContent = 'Доброго дня';
+    } else if (hours >= 17 && hours < 24) {
+      greetingElement.textContent = 'Доброго вечора';
+    } else {
+      greetingElement.textContent = 'Доброї ночі'; // Ночью по умолчанию
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const reason = (params.get('reason') || '').trim();
+    const toast = document.getElementById('sessionToast');
+
+    let toastMessage = '';
+    if (reason === 'forced_logout') {
+      toastMessage = 'Ваша сессия завершена администратором';
+    } else if (reason === 'account_blocked') {
+      toastMessage = 'Ваш аккаунт заблокирован администратором';
+    }
+
+    if (toastMessage) {
+      toast.textContent = toastMessage;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4500);
+
+      params.delete('reason');
+      const cleanQuery = params.toString();
+      const cleanUrl = `${window.location.pathname}${cleanQuery ? `?${cleanQuery}` : ''}`;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  </script>
+
+  <script>
+    // Тексты для вывода
+    const texts = [
+      "Бази даних - це систематизовані сховища даних, які використовуються для зберігання, управління та обробки інформації. З розвитком технологій виникли два основні підходи до організації баз даних: реляційні (SQL) і нереляційні (NoSQL).",
+      "JavaScript відповідає за інтерактивність веб-сторінок, даючи змогу динамічно змінювати контент, обробляти події та взаємодіяти з користувачем.",
+      "Сервер обробляє запити від клієнта, взаємодіє з базою даних і повертає потрібний результат у вигляді HTML або JSON.",
+      "Важливою частиною розробки є розуміння клієнт-серверної архітектури, взаємодії між фронтендом і бекендом для успішного функціонування веб-додатків.",
+      "Через AJAX і Fetch API JavaScript може надсилати запити на сервер і отримувати дані без необхідності перезавантажувати сторінку.",
+      "Node.js дає змогу створювати високопродуктивні сервери, що обробляють велику кількість запитів одночасно, завдяки своїй неблокувальній моделі введення-виведення.",
+      "Важливим аспектом є забезпечення безпеки веб-додатків, включно із захистом від SQL-ін'єкцій, крос-сайтових скриптів (XSS) та інших вразливостей."
+    ];
+    
+    let index = 0;
+    let currentTextIndex = 0;
+    const textContainer = document.getElementById("textContainer");
+    
+    function typeText() {
+      // Получаем текущий текст
+      const currentText = texts[currentTextIndex];
+      
+      // Добавляем новый символ
+      textContainer.textContent += currentText.charAt(index);
+      index++;
+
+      // Прокручиваем вниз
+      textContainer.scrollTop = textContainer.scrollHeight;
+
+      // Если текст выйдет за пределы экрана, стираем старый
+      if (textContainer.scrollHeight > textContainer.clientHeight) {
+        // Удаляем первый символ
+        textContainer.textContent = textContainer.textContent.slice(1);
+      }
+
+      // Если текст уже вывели полностью, останавливаем интервал
+      if (index >= currentText.length) {
+        clearInterval(typingInterval);
+
+        // Стираем текущий текст с анимацией
+        setTimeout(() => {
+          textContainer.classList.add('fade-out');  // Добавляем класс для анимации исчезновения
+        }, 1000); // Задержка перед исчезновением
+
+        // После окончания анимации очищаем текст и начинаем новый
+        setTimeout(() => {
+          textContainer.textContent = '';  // Очищаем контейнер
+          textContainer.classList.remove('fade-out');  // Убираем класс анимации
+          currentTextIndex = (currentTextIndex + 1) % texts.length;  // Переходим к следующему тексту
+          index = 0;  // Сбрасываем индекс для нового текста
+          typingInterval = setInterval(typeText, 50); // Запускаем печать следующего текста
+        }, 2000); // Задержка для завершения анимации
+      }
+    }
+
+    // Задаем интервал для вывода текста
+    let typingInterval = setInterval(typeText, 50); // 50ms между символами
+  </script>
+  <script src="/scripts/registrationForm.js"></script>
+</body>
+</html>

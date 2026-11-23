@@ -1,0 +1,544 @@
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: black;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  width: 100%;
+}
+
+
+.header {
+  top: 5%;
+  width: 100%;
+  
+  position: absolute;
+  z-index: 1;
+  font-size: 4rem;
+  font-family: Fred;
+  color: rgb(255, 255, 255);
+
+  place-items: center;
+  position: fixed;
+  text-align: center;
+  
+}
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.headerr {
+  height: 48px;
+  width: 100%;
+  background: #1c23a7;
+  position: relative;
+  z-index: 1;
+  display: flex; /* Горизонтальное расположение */
+  justify-content: left;
+  align-items: center;
+  gap: 100px; /* Расстояние между кнопками */
+  white-space: nowrap;
+}
+
+.menu-item {
+  padding: 9.5px 20px;
+  width: max-content;
+  background-color: #1c23a7; /* Цвет фона по умолчанию */
+  color: #bebebe; /* Цвет текста по умолчанию */
+  font-size: 2.1rem;
+  font-family: Fred;
+  cursor: pointer;
+  padding-left: 30px;
+  
+}
+
+.menu-item:hover {
+  background-color: #2c33c7; /* Фон при наведении */
+}
+
+.menu-item.active {
+  background-color: #bebebe; /* Серый фон активного элемента */
+  color: #0000ff; /* Синий цвет текста */
+}
+@font-face {
+  font-family: Fred;
+  src: url(sbios.ttf);
+}
+@font-face {
+  font-family: terminal;
+  src: url(monterminal.otf);
+}
+.footer{
+  background: linear-gradient(to left, #1c23a7, #262fd8);
+  color: #bebebe;
+  text-align: center;
+  height: 40px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 2.8rem;
+  font-family: Fred;
+}
+.risk{
+  position: absolute; /* Для точного позиционирования */
+  top: 100px; /* Отступ сверху 20% от высоты окна */
+  bottom: 40px; /* Отступ снизу 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  background-color: #bebebe; /* Цвет прямоугольника */
+}
+.ramka{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 2.5%; /* Отступ сверху 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: 78.3%;
+  margin-left: 0.5%;
+  height: 95%;
+  border: solid #1c23a7;
+  background-color: #bebebe; /* Цвет прямоугольника */
+  max-height: 100%; /* Настройте под ваш дизайн */
+  overflow-y: auto;  /* Включаем вертикальную прокрутку */
+
+  scroll-padding-inline: 300px;
+  &::-webkit-scrollbar{
+    width: auto;
+  }
+  &::-webkit-scrollbar-thumb{
+    background-color: #1c23a7;
+  }
+  &::-webkit-scrollbar-track{
+   background-color: gray;
+   
+  }
+ /* scrollbar-color: #1c23a7 gray; */
+}
+
+/* Стиль для элемента, после которого начинается прокрутка */
+
+.ramkaa{
+  position: absolute; /* Для точного позиционирования */
+  text-align: left;
+  padding-left: 12px;
+  color: #1c23a7;
+  font-weight: bold;
+  top: 2.5%; /* Отступ сверху 20% от высоты окна */
+  left: 78.5%; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: 19.48%;
+  margin-left: 0.5%;
+  height: 95%;
+  border: solid #1c23a7;
+  background-color: #bebebe; /* Цвет прямоугольника */
+  font-size: 1.8rem;
+  font-family: terminal;
+}
+
+
+
+.ramkaaa{
+  position: absolute; /* Для точного позиционирования */
+
+  padding-left: 2px;
+  color: #1c23a7;
+  font-weight: bold;
+
+  bottom: 1%; /* Отступ снизу 20% от высоты окна */
+  left: 0; /* Растягиваемся до правого края */
+  width: 96%;
+  margin-left: 10px;
+  height: max-content;
+  background-color: #bebebe; /* Цвет прямоугольника */
+  font-size: 1.8rem;
+  font-family: terminal;
+}
+.options{
+height: 70%;
+width: 50%;
+padding: 25px;
+margin-top: 30px;
+font-size: 1.8rem;
+font-family: terminal;
+color: #1c23a7;
+font-weight: bold;
+}
+span {
+  display: block; /* Каждый span будет начинаться с новой строки */
+}
+.optionss{
+  margin-top: 7%;  
+}
+.parameters{
+  height: 70%;
+width: 50%;
+padding: 25px;
+margin-top: 30px;
+font-size: 1.8rem;
+font-family: terminal;
+color: #1c23a7;
+font-weight: bold;
+}
+.active {
+  color: white;
+}
+.activeMenu{
+  color: gray;
+  background-color: black;
+}
+
+.brackets {
+  font-weight: bold;
+}
+.gray{
+  color: white;
+}
+.alert{
+  z-index: 1;
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  top: 350px;
+  left: 750px;
+  background-color: #1c23a7;
+  border-color: red;
+}
+.sata_alert{
+  z-index: 1;
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  top: 350px;
+  left: 750px;
+  background-color: #1c23a7;
+  border-color: red;
+}
+.alert_1 {
+  z-index: 1;
+  width: 400px;
+  min-height: 200px;
+  height: auto; /* Важно: auto вместо 40% */
+  position: relative; 
+  top: 260px;
+  left: 750px;
+  background-color: #1c23a7;
+  width: 395px;
+  /* Добавляем отступ для содержимого */
+  padding: 20px 0;
+  max-height: 320px; /* Настройте под ваш дизайн */
+  overflow-y: auto;  /* Включаем вертикальную прокрутку */
+  &::-webkit-scrollbar{
+    width: auto;
+  }
+  &::-webkit-scrollbar-thumb{
+    background-color: #1c23a7;
+    border: solid black;
+  }
+  &::-webkit-scrollbar-track{
+  background-color: gray;
+   
+  
+  }
+  
+}
+.alertramka{
+  
+  position: relative;
+  height: 165px;
+  width: 370px;
+  top: 19px;
+  left: 13px;
+  font-size: 1.8rem;
+  font-family: terminal;
+  place-items: center;
+  text-align: left;
+  border: solid rgb(180, 176, 176);
+}
+.alertramka_1{
+  min-height: 200px;
+  position: relative; /* Меняем absolute на relative */
+  height: max-content;
+  max-height: 320px;
+  width: 370px;
+  margin: 0 auto; /* Центрирование внутри alert_1 */
+  font-size: 1.8rem;
+  font-family: terminal;
+  display: grid;
+  
+  text-align: left;
+  border: solid rgb(180, 176, 176);
+  /* Убираем absolute-позиционирование */
+  top: unset;
+  left: unset;
+}
+.optionsalert{
+  font-weight: bold;
+  font-size: 1.8rem;
+  font-family: terminal;
+  color: #bebebe;
+  position: absolute;
+  width: 150px;
+  height: 30px;
+  left: 100px;
+  top: -20px;
+  place-items: center;
+  text-align: center;
+  background-color: #1c23a7;
+
+}
+.alerttext{
+  color: #bebebe;
+  font-weight: bold;
+  font-size: 1.8rem;
+  font-family: terminal;
+  padding: 12px;
+  position: absolute;
+  text-align: left;
+  place-items: left;
+  line-height: 1.5
+}
+.alerttext_1 {
+  width: 100%;
+  color: #bebebe;
+  font-weight: bold;
+  font-size: 1.8rem;
+  font-family: terminal;
+  position: relative;
+  height: max-content;
+  padding-left: 15px;
+  padding-top: 15px;
+  text-align: left;
+  line-height: 1.5;
+  overflow-y: auto;
+  max-height: 290px;
+  box-sizing: border-box; /* Важно для корректных расчетов размеров */
+
+  /* Вертикальный скроллбар */
+  &::-webkit-scrollbar {
+    width: 10px; /* Фиксированная ширина */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #1c23a7;
+    border: solid black 1px;
+    
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: gray;
+    border-left: 1px solid #000; /* Граница для трека */
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: #1c23a7 gray;
+
+}
+.hidden{
+  visibility: hidden;
+}
+.systeminf{
+  transition: 200ms;
+  height: 70%;
+  width: 1000px;
+  line-height: 1.22;
+  margin-top: 10px;
+  font-size: 1.8rem;
+  font-family: "Space Mono", serif;
+  color: #404040;
+
+}
+.prosse{
+  width: 400px;
+}
+
+.noactive{
+  color: rgb(64, 64, 64);
+}
+.nochose{
+  position: absolute; /* Для точного позиционирования */
+  width: 50%;
+  white-space: normal;
+  left: 45%;
+}
+.paramOcTweak{
+  margin-top: 66px;
+  white-space: nowrap;
+}
+.underlined::after {
+  display: block;
+  position: absolute; /* Для точного позиционирования */
+  content: ""; /* Создаём пустой элемент */
+  width: 90%; /* Длина полоски соответствует ширине текста */
+  height: 0.6%; /* Толщина полоски */
+  margin-left: 5%;
+  background-color: #1c23a7; /* Цвет полоски */
+  z-index: 2;
+  top: 20%;
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+}
+.paramsata{
+  height: 70%;
+width: 50%;
+padding: 25px;
+
+font-size: 1.8rem;
+font-family: terminal;
+color: #1c23a7;
+font-weight: bold;
+}
+.ocnew{
+  white-space: nowrap;
+}
+
+.advancedslot{
+  height: 70%;
+  width: 50%;
+  padding: 25px;
+  margin-top: 30px;
+  font-size: 1.8rem;
+  font-family: terminal;
+  color: #1c23a7;
+  font-weight: bold;
+  
+}
+.advanccpucon{
+  width: 190%;
+  height: 10%;
+  position: fixed;
+}
+
+button{
+  color: #1c23a7;
+  font-family: Fred;
+  font-size: 2.0rem;
+  border-style: none;
+  background-color: #FFFFFF;
+  font-weight: bold;
+}
+
+.FlashInstant{
+  font-size: 2.8rem;
+  font-family: fred;
+  color: white;
+  
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 1.5%; /* Отступ сверху 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: 97%;
+  margin-left: 1%;
+  height: 95%;
+  border: solid black;
+  background-color: black; /* Цвет прямоугольника */
+  max-height: 100%; /* Настройте под ваш дизайн */
+
+
+  scroll-padding-inline: 300px;
+  &::-webkit-scrollbar{
+    width: auto;
+  }
+  &::-webkit-scrollbar-thumb{
+    background-color: #1c23a7;
+  }
+  &::-webkit-scrollbar-track{
+   background-color: gray;
+   
+  }
+ /* scrollbar-color: #1c23a7 gray; */
+ transition: 0.5s ease-in-out;
+}
+
+.leftFlash{
+  
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 2%; /* Отступ сверху 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: max-content;
+  height: 75%;
+  border: solid black;
+  background-color: black; 
+z-index: 23;
+
+  
+}
+.rightFlash{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 2%; /* Отступ сверху 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: 49.3%;
+  margin-left: 49.8%;
+  height: 75%;
+  border: solid black;
+  background-color: black; 
+  max-height: 100%; /* Настройте под ваш дизайн */
+  overflow-y: auto;  /* Включаем вертикальную прокрутку */
+
+  scroll-padding-inline: 300px;
+  &::-webkit-scrollbar{
+    width: auto;
+  }
+  &::-webkit-scrollbar-thumb{
+    background-color: #1c23a7;
+  }
+  &::-webkit-scrollbar-track{
+   background-color: gray;
+   
+  }
+ /* scrollbar-color: #1c23a7 gray; */
+  
+}
+.footertFlash{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 77.6%; /* Отступ сверху 20% от высоты окна */
+  left: 0; /* Начало с левой части экрана */
+  right: 0; /* Растягиваемся до правого края */
+  width: 98.60%;
+  height: 20%;
+  border: solid black;
+  background-color: black; 
+  max-height: 100%; /* Настройте под ваш дизайн */
+  
+  text-align: left;
+  color: white;
+}
+.f3torescan{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  width: 100%;
+  height: 100%;
+  max-height: 100%; /* Настройте под ваш дизайн */
+  overflow-y: auto;  /* Включаем вертикальную прокрутку */
+}
+#checkInfo{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 84%;
+left: 96.5%;
+}
+#amerimeg{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 54%;
+}
+#amerimeg1{
+  display: flex;
+  position: absolute; /* Для точного позиционирования */
+  top: 54%;
+}

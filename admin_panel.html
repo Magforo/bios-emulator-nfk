@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en" data-require-auth="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="auth_helper.js"></script>
+  <title>Admin Panel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --bg: #f2f5ff;
+      --text: #101a70;
+      --card: #ffffff;
+      --line: #c9d2ff;
+      --accent: #1f2ca8;
+      --danger: #a32828;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Space Mono', monospace;
+      background: linear-gradient(120deg, #eef3ff, #f7f9ff 40%, #edf0ff);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .panel {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 2px solid var(--accent);
+      box-shadow: 0 10px 25px rgba(20, 35, 140, 0.2);
+      padding: 20px;
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .sub {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .presence-toggle {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: #f6f8ff;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .presence-toggle input {
+      margin: 0;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .danger {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      margin: 12px 0 20px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      padding: 12px;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+
+    .card-value {
+      margin-top: 8px;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #edf1ff;
+    }
+
+    .ok { color: #1f7a34; }
+    .fail { color: #9a2222; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn.active {
+      background: #e8edff;
+      font-weight: 700;
+    }
+
+    .tab-pane.hidden {
+      display: none;
+    }
+
+    .users-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 0 0 10px;
+      flex-wrap: wrap;
+    }
+
+    .users-controls input {
+      border: 1px solid var(--line);
+      padding: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      min-width: 160px;
+    }
+
+    .avatar-mini {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: #e4e9ff;
+      cursor: zoom-in;
+    }
+
+    .avatar-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 56, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .avatar-modal.hidden {
+      display: none;
+    }
+
+    .avatar-modal-content {
+      background: #fff;
+      border: 2px solid var(--accent);
+      padding: 14px;
+      box-shadow: 0 10px 28px rgba(11, 20, 88, 0.35);
+      max-width: min(90vw, 560px);
+      max-height: 90vh;
+    }
+
+    .avatar-modal-content img {
+      display: block;
+      width: min(78vw, 520px);
+      height: auto;
+      max-height: 72vh;
+      object-fit: contain;
+      border: 1px solid var(--line);
+      background: #eef2ff;
+    }
+
+    .avatar-modal-title {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+    }
+
+    .role-badge {
+      font-size: 0.72rem;
+      border: 1px solid var(--line);
+      display: inline-block;
+      padding: 2px 6px;
+    }
+
+    .role-super {
+      border-color: #a32828;
+      color: #a32828;
+      font-weight: 700;
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      border: 1px solid var(--line);
+      display: inline-block;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+
+    .status-online {
+      color: #1f7a34;
+      border-color: #1f7a34;
+    }
+
+    .status-offline {
+      color: #7a7a7a;
+      border-color: #7a7a7a;
+    }
+
+    .status-blocked {
+      color: #9a2222;
+      border-color: #9a2222;
+    }
+
+    .gallery-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .gallery-controls input,
+    .gallery-controls select {
+      border: 1px solid var(--line);
+      padding: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      min-width: 180px;
+    }
+
+    .gallery-view-switch {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .gallery-view-switch button {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+    }
+
+    .gallery-view-switch button.active {
+      background: #e8edff;
+      font-weight: 700;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .gallery-item {
+      border: 1px solid var(--line);
+      background: #f8faff;
+      padding: 8px;
+      cursor: zoom-in;
+      position: relative;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: #e6ebff;
+      display: block;
+    }
+
+    .gallery-item-caption {
+      font-size: 0.74rem;
+      margin-top: 6px;
+      color: #24357f;
+      min-height: 1.2em;
+      word-break: break-word;
+    }
+
+    .gallery-item-time {
+      font-size: 0.68rem;
+      opacity: 0.75;
+      margin-top: 4px;
+    }
+
+    .gallery-item-delete {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: 1px solid #a32828;
+      color: #a32828;
+      background: #ffffff;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      z-index: 2;
+    }
+
+    .gallery-empty {
+      border: 1px dashed var(--line);
+      padding: 18px;
+      font-size: 0.82rem;
+      opacity: 0.85;
+    }
+
+    .gallery-owner-note {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-bottom: 8px;
+    }
+
+    .bios-config-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .bios-config-controls select,
+    .bios-config-controls input {
+      border: 1px solid var(--line);
+      padding: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      min-width: 180px;
+    }
+
+    .bios-task-list {
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      max-height: 320px;
+      overflow: auto;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .bios-task-item {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.8rem;
+      padding: 6px;
+      border: 1px solid #e1e8ff;
+      background: #ffffff;
+    }
+
+    .bios-task-item input {
+      margin-top: 2px;
+    }
+
+    .pvp-admin-box {
+      border: 1px solid var(--line);
+      background: #f8faff;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    .pvp-admin-box h4 {
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+    }
+
+    .app-toast {
+      position: fixed;
+      top: 26px;
+      right: 26px;
+      width: min(360px, calc(100vw - 22px));
+      background: #1a234f;
+      color: #eef2ff;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(13, 20, 54, 0.35);
+      display: grid;
+      grid-template-columns: 46px 1fr 26px;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 14px 16px;
+      box-sizing: border-box;
+      z-index: 12000;
+      border-left: 3px solid #ff4d3c;
+      overflow: hidden;
+    }
+
+    .app-toast-success {
+      border-left-color: #1faa68;
+    }
+
+    .app-toast-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+      font-weight: 700;
+      background: rgba(255, 77, 60, 0.2);
+      color: #ff6f62;
+    }
+
+    .app-toast-success .app-toast-icon {
+      background: rgba(31, 170, 104, 0.2);
+      color: #4fda94;
+    }
+
+    .app-toast-title {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .app-toast-message {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: #ccd4ff;
+    }
+
+    .app-toast-close {
+      align-self: start;
+      justify-self: end;
+      border: none;
+      background: transparent;
+      color: #9aa4d8;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .app-toast-close:hover {
+      color: #ffffff;
+      background: transparent;
+    }
+
+    .app-toast-progress {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 100%;
+      background: #ff4d3c;
+      animation: toastProgress 3s linear forwards;
+    }
+
+    .app-toast-success .app-toast-progress {
+      background: #1faa68;
+    }
+
+    @keyframes toastProgress {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 12px; }
+      .panel { padding: 12px; }
+      table { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <div class="head">
+      <div>
+        <h1>Admin Panel</h1>
+        <div class="sub">Signed in as: <span id="adminUserName">...</span> (ID: <span id="adminUserId">...</span>)</div>
+      </div>
+      <div class="buttons">
+        <label id="presenceToggleWrap" class="presence-toggle hidden" title="Hidden mode for super admin (ID 5)">
+          <input id="presenceToggle" type="checkbox">
+          Hidden Presence
+        </label>
+        <button id="refreshBtn">Refresh</button>
+        <button id="copyBtn">Copy Report</button>
+        <button id="backBtn">Open BIOS Tab</button>
+      </div>
+    </div>
+
+    <div id="errorBox" class="app-toast hidden" aria-live="polite"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overviewTab">Overview</button>
+      <button class="tab-btn" data-tab="usersTab">Users</button>
+      <button class="tab-btn" data-tab="biosTasksTab">BIOS Tasks</button>
+      <button class="tab-btn" data-tab="pvpTab">PvP Battles</button>
+      <button class="tab-btn" data-tab="galleryTab">Gallery</button>
+      <button class="tab-btn hidden" data-tab="auditTab" id="auditTabButton">Audit Log</button>
+    </div>
+
+    <div id="overviewTab" class="tab-pane">
+      <div class="cards">
+        <div class="card"><div class="card-title">Total Users</div><div class="card-value" id="totalUsers">-</div></div>
+        <div class="card"><div class="card-title">Active Users</div><div class="card-value" id="activeUsers">-</div></div>
+        <div class="card"><div class="card-title">Users with Avatar</div><div class="card-value" id="usersWithAvatar">-</div></div>
+        <div class="card"><div class="card-title">Failed Logins (24h)</div><div class="card-value" id="failedLogins24h">-</div></div>
+      </div>
+
+      <h3 style="margin:0 0 10px;">Recent Login Activity</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>IP</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="recentLoginsBody">
+          <tr><td colspan="5">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="usersTab" class="tab-pane hidden">
+      <h3 style="margin:0 0 10px;">All Users</h3>
+      <div class="users-controls">
+        <input id="promoteUserIdInput" type="number" min="1" placeholder="User ID to grant admin">
+        <button id="promoteByIdBtn">Grant Admin</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Avatar</th>
+            <th>User ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Online</th>
+            <th>Last Activity</th>
+            <th>Last Login</th>
+            <th>Status</th>
+            <th>Role</th>
+            <th>Audit Access</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="11">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="auditTab" class="tab-pane hidden">
+      <h3 style="margin:0 0 10px;">Admin Audit Log</h3>
+      <div class="users-controls">
+        <input id="auditLimitInput" type="number" min="10" max="300" value="100" placeholder="Limit">
+        <button id="refreshAuditBtn">Refresh Audit</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>Actor</th>
+            <th>Action</th>
+            <th>Details</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody id="auditBody">
+          <tr><td colspan="6">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="galleryTab" class="tab-pane hidden">
+      <h3 style="margin:0 0 10px;">Admin Gallery</h3>
+      <div id="galleryOwnerNote" class="gallery-owner-note">Your gallery</div>
+      <div class="gallery-controls">
+        <select id="galleryOwnerSelect" class="hidden"></select>
+        <div class="gallery-view-switch">
+          <button id="galleryActiveViewBtn" type="button" class="active">Active Photos</button>
+          <button id="galleryDeletedViewBtn" type="button" class="hidden">Deleted Photos</button>
+        </div>
+        <button id="refreshGalleryBtn">Refresh Gallery</button>
+      </div>
+      <div id="galleryUploadControls" class="gallery-controls">
+        <input id="galleryUploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+        <input id="galleryCaptionInput" type="text" maxlength="160" placeholder="Photo caption (optional)">
+        <button id="uploadGalleryBtn">Upload Photo</button>
+      </div>
+      <div id="galleryGrid" class="gallery-grid">
+        <div class="gallery-empty">Gallery is loading...</div>
+      </div>
+    </div>
+
+    <div id="biosTasksTab" class="tab-pane hidden">
+      <h3 style="margin:0 0 10px;">BIOS Tasks Configuration</h3>
+      <div class="bios-config-controls">
+        <select id="biosTasksUserSelect"></select>
+        <input id="biosVisibleTaskCount" type="number" min="1" value="1" placeholder="Visible task count">
+        <button id="biosSelectAllBtn" type="button">Select All</button>
+        <button id="biosUnselectAllBtn" type="button">Unselect All</button>
+        <button id="biosSaveConfigBtn" type="button">Save BIOS Config</button>
+        <button id="biosRefreshConfigBtn" type="button">Refresh BIOS Config</button>
+      </div>
+      <div id="biosTaskCatalog" class="bios-task-list">
+        <div class="gallery-empty">BIOS tasks are loading...</div>
+      </div>
+    </div>
+
+    <div id="pvpTab" class="tab-pane hidden">
+      <h3 style="margin:0 0 10px;">PvP Battles (Admin)</h3>
+      <div class="pvp-admin-box">
+        <h4>Create battle between users</h4>
+        <div class="bios-config-controls">
+          <select id="pvpPlayer1Select"></select>
+          <select id="pvpPlayer2Select"></select>
+          <button id="pvpSelectAllTasksBtn" type="button">Select All Tasks</button>
+          <button id="pvpClearTasksBtn" type="button">Clear Tasks</button>
+          <button id="pvpCreateBattleBtn" type="button">Start Battle</button>
+          <button id="pvpRefreshBtn" type="button">Refresh PvP Data</button>
+        </div>
+        <div id="pvpTaskCatalog" class="bios-task-list">
+          <div class="gallery-empty">PvP task catalog is loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="avatarModal" class="avatar-modal hidden">
+    <div class="avatar-modal-content">
+      <p class="avatar-modal-title">Avatar preview</p>
+      <img id="avatarModalImage" src="" alt="Avatar preview">
+    </div>
+  </div>
+
+  <div id="galleryModal" class="avatar-modal hidden">
+    <div class="avatar-modal-content">
+      <p class="avatar-modal-title" id="galleryModalTitle">Gallery photo</p>
+      <img id="galleryModalImage" src="" alt="Gallery photo preview">
+    </div>
+  </div>
+
+  <script>
+    let lastReport = null;
+    let currentActor = null;
+    let toastTimer = null;
+    let galleryOwnerUserId = null;
+    let galleryViewMode = 'active';
+    let canViewDeletedGallery = false;
+    let biosTaskCatalog = [];
+    let biosTaskUsers = [];
+    let biosSelectedTaskIds = [];
+    let pvpAdminUsers = [];
+    let pvpAdminTasks = [];
+    let pvpAdminSelectedTaskIds = [];
+    const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70"><rect width="100%" height="100%" fill="%23d8e0ff"/><text x="50%" y="54%" text-anchor="middle" font-family="monospace" font-size="22" fill="%2324349d">U</text></svg>';
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function hideToast() {
+      const box = document.getElementById('errorBox');
+      box.className = 'app-toast hidden';
+      box.innerHTML = '';
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+    }
+
+    function showToast(type, title, message) {
+      const box = document.getElementById('errorBox');
+      const kind = type === 'success' ? 'success' : 'error';
+      box.className = `app-toast app-toast-${kind}`;
+      box.innerHTML = `
+        <div class="app-toast-icon">${kind === 'success' ? '✓' : '✕'}</div>
+        <div>
+          <p class="app-toast-title">${escapeHtml(title)}</p>
+          <p class="app-toast-message">${escapeHtml(message)}</p>
+        </div>
+        <button type="button" class="app-toast-close" aria-label="Close notification">×</button>
+        <div class="app-toast-progress"></div>
+      `;
+
+      const closeButton = box.querySelector('.app-toast-close');
+      if (closeButton) {
+        closeButton.addEventListener('click', hideToast);
+      }
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
+      toastTimer = setTimeout(hideToast, 3000);
+    }
+
+    function setError(message) {
+      if (!message) {
+        hideToast();
+        return;
+      }
+      showToast('error', 'Помилка', message);
+    }
+
+    function setSuccess(message) {
+      if (!message) {
+        hideToast();
+        return;
+      }
+      showToast('success', 'Успішно', message);
+    }
+
+    function activateTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach((pane) => {
+        pane.classList.toggle('hidden', pane.id !== tabId);
+      });
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+    }
+
+    async function fetchCsrfToken() {
+      const response = await fetch('get_csrf_token.php', { credentials: 'same-origin' });
+      const data = await response.json();
+
+      if (!response.ok || !data.csrf_token) {
+        throw new Error('Failed to get CSRF token');
+      }
+
+      return data.csrf_token;
+    }
+
+    function isAdminUser(user) {
+      return Number(user?.user_id) === 5 || Number(user?.is_admin) === 1;
+    }
+
+    function canSeeAuditTab() {
+      return Boolean(currentActor?.is_super_admin || currentActor?.can_view_audit);
+    }
+
+    function isSuperAdminActor() {
+      return Boolean(currentActor?.is_super_admin);
+    }
+
+    function refreshAuditTabVisibility() {
+      const auditButton = document.getElementById('auditTabButton');
+      const canSee = canSeeAuditTab();
+      auditButton.classList.toggle('hidden', !canSee);
+      if (!canSee && auditButton.classList.contains('active')) {
+        activateTab('overviewTab');
+      }
+    }
+
+    function refreshPresenceToggle() {
+      const wrap = document.getElementById('presenceToggleWrap');
+      const toggle = document.getElementById('presenceToggle');
+      const isUserFive = Number(auth?.user?.user_id || 0) === 5;
+      if (!isUserFive) {
+        wrap.classList.add('hidden');
+        toggle.checked = false;
+        return;
+      }
+
+      wrap.classList.remove('hidden');
+      toggle.checked = Boolean(currentActor?.hide_presence_mode);
+    }
+
+    function renderStats(payload) {
+      const stats = payload.stats || {};
+      document.getElementById('totalUsers').textContent = String(stats.total_users ?? 0);
+      document.getElementById('activeUsers').textContent = String(stats.active_users ?? 0);
+      document.getElementById('usersWithAvatar').textContent = String(stats.users_with_avatar ?? 0);
+      document.getElementById('failedLogins24h').textContent = String(stats.failed_logins_24h ?? 0);
+
+      const body = document.getElementById('recentLoginsBody');
+      const rows = Array.isArray(payload.recent_logins) ? payload.recent_logins : [];
+
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="5">No login activity yet.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = rows.map((row) => {
+        const first = (row.first_name || '').trim();
+        const last = (row.last_name || '').trim();
+        const name = (first + ' ' + last).trim() || 'Unknown';
+        const ok = Number(row.success) === 1;
+        return `<tr>
+          <td>${row.user_id ?? '-'}</td>
+          <td>${name}</td>
+          <td>${row.ip ?? '-'}</td>
+          <td>${row.login_time ?? '-'}</td>
+          <td class="${ok ? 'ok' : 'fail'}">${ok ? 'Success' : 'Failed'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function normalizeSelectedBiosTaskIds() {
+      const allowed = new Set((biosTaskCatalog || []).map((item) => Number(item.id || 0)).filter((id) => id > 0));
+      biosSelectedTaskIds = Array.from(new Set((biosSelectedTaskIds || []).map((id) => Number(id || 0)).filter((id) => allowed.has(id))));
+    }
+
+    function renderBiosTaskCatalog() {
+      const holder = document.getElementById('biosTaskCatalog');
+      normalizeSelectedBiosTaskIds();
+
+      if (!Array.isArray(biosTaskCatalog) || !biosTaskCatalog.length) {
+        holder.innerHTML = '<div class="gallery-empty">No BIOS tasks in catalog.</div>';
+        return;
+      }
+
+      const selectedSet = new Set(biosSelectedTaskIds);
+      holder.innerHTML = biosTaskCatalog.map((task) => {
+        const id = Number(task.id || 0);
+        const title = escapeHtml(task.title || '');
+        const checked = selectedSet.has(id) ? 'checked' : '';
+        return `<label class="bios-task-item"><input type="checkbox" data-bios-task-id="${id}" ${checked}><span>${title}</span></label>`;
+      }).join('');
+
+      holder.querySelectorAll('[data-bios-task-id]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          const taskId = Number(checkbox.dataset.biosTaskId || 0);
+          if (!taskId) {
+            return;
+          }
+
+          if (checkbox.checked) {
+            biosSelectedTaskIds = Array.from(new Set([...biosSelectedTaskIds, taskId]));
+          } else {
+            biosSelectedTaskIds = biosSelectedTaskIds.filter((id) => id !== taskId);
+          }
+        });
+      });
+    }
+
+    function renderBiosUsers(selectedUserId = 0) {
+      const select = document.getElementById('biosTasksUserSelect');
+      if (!Array.isArray(biosTaskUsers) || !biosTaskUsers.length) {
+        select.innerHTML = '<option value="">No users</option>';
+        return;
+      }
+
+      const selected = Number(selectedUserId || biosTaskUsers[0].id || 0);
+      select.innerHTML = biosTaskUsers.map((user) => {
+        const id = Number(user.id || 0);
+        const name = escapeHtml((user.name || '').trim() || `User #${id}`);
+        const marker = Number(user.is_active) === 1 ? '' : ' (blocked)';
+        return `<option value="${id}" ${id === selected ? 'selected' : ''}>${name} (ID: ${id})${marker}</option>`;
+      }).join('');
+    }
+
+    async function loadBiosTaskAdminData() {
+      const response = await fetch('admin_bios_tasks.php?action=list', { credentials: 'same-origin' });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load BIOS task settings');
+      }
+
+      biosTaskUsers = Array.isArray(data.users) ? data.users : [];
+      biosTaskCatalog = Array.isArray(data.catalog) ? data.catalog : [];
+      const selectedUserId = Number(document.getElementById('biosTasksUserSelect').value || 0);
+      renderBiosUsers(selectedUserId);
+      renderBiosTaskCatalog();
+    }
+
+    async function loadBiosTaskUserConfig(targetUserId) {
+      const userId = Number(targetUserId || 0);
+      if (!userId) {
+        return;
+      }
+
+      const response = await fetch(`admin_bios_tasks.php?action=get_user_config&target_user_id=${userId}`, { credentials: 'same-origin' });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load user BIOS config');
+      }
+
+      biosTaskUsers = Array.isArray(data.users) ? data.users : biosTaskUsers;
+      biosTaskCatalog = Array.isArray(data.catalog) ? data.catalog : biosTaskCatalog;
+      const config = data.config || {};
+      biosSelectedTaskIds = Array.isArray(config.assigned_task_ids) ? config.assigned_task_ids.map((id) => Number(id || 0)).filter((id) => id > 0) : [];
+      document.getElementById('biosVisibleTaskCount').value = String(Number(config.visible_task_count || 1));
+
+      renderBiosUsers(userId);
+      renderBiosTaskCatalog();
+    }
+
+    async function saveBiosTaskConfig() {
+      const targetUserId = Number(document.getElementById('biosTasksUserSelect').value || 0);
+      const visibleTaskCount = Number(document.getElementById('biosVisibleTaskCount').value || 0);
+      normalizeSelectedBiosTaskIds();
+
+      if (!targetUserId) {
+        throw new Error('Select user first');
+      }
+
+      if (!biosSelectedTaskIds.length) {
+        throw new Error('Select at least one BIOS task');
+      }
+
+      if (visibleTaskCount < 1 || visibleTaskCount > biosSelectedTaskIds.length) {
+        throw new Error('Visible task count must be between 1 and selected task count');
+      }
+
+      const csrfToken = await fetchCsrfToken();
+      const formData = new FormData();
+      formData.append('csrf_token', csrfToken);
+      formData.append('action', 'save_user_config');
+      formData.append('target_user_id', String(targetUserId));
+      formData.append('visible_task_count', String(visibleTaskCount));
+      formData.append('assigned_task_ids', JSON.stringify(biosSelectedTaskIds));
+
+      const response = await fetch('admin_bios_tasks.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to save BIOS config');
+      }
+
+      setSuccess('BIOS tasks config saved');
+      await loadBiosTaskUserConfig(targetUserId);
+    }
+
+    function renderPvpAdminUsers() {
+      const player1 = document.getElementById('pvpPlayer1Select');
+      const player2 = document.getElementById('pvpPlayer2Select');
+      if (!Array.isArray(pvpAdminUsers) || !pvpAdminUsers.length) {
+        player1.innerHTML = '<option value="">No users</option>';
+        player2.innerHTML = '<option value="">No users</option>';
+        return;
+      }
+
+      const options = pvpAdminUsers.map((user) => {
+        const id = Number(user.id || 0);
+        const name = escapeHtml((user.name || '').trim() || `User #${id}`);
+        const marker = Number(user.is_active) === 1 ? '' : ' (blocked)';
+        return `<option value="${id}">${name} (ID: ${id})${marker}</option>`;
+      }).join('');
+
+      player1.innerHTML = options;
+      player2.innerHTML = options;
+
+      if (player2.options.length > 1 && player2.value === player1.value) {
+        player2.selectedIndex = 1;
+      }
+    }
+
+    function renderPvpTaskCatalog() {
+      const holder = document.getElementById('pvpTaskCatalog');
+      if (!Array.isArray(pvpAdminTasks) || !pvpAdminTasks.length) {
+        holder.innerHTML = '<div class="gallery-empty">No active tasks for PvP.</div>';
+        return;
+      }
+
+      const selected = new Set((pvpAdminSelectedTaskIds || []).map((id) => Number(id || 0)));
+      holder.innerHTML = pvpAdminTasks.map((task) => {
+        const id = Number(task.id || 0);
+        const checked = selected.has(id) ? 'checked' : '';
+        return `<label class="bios-task-item"><input type="checkbox" data-pvp-task-id="${id}" ${checked}><span>${escapeHtml(task.title || '')}</span></label>`;
+      }).join('');
+
+      holder.querySelectorAll('[data-pvp-task-id]').forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          const taskId = Number(checkbox.dataset.pvpTaskId || 0);
+          if (!taskId) {
+            return;
+          }
+
+          if (checkbox.checked) {
+            pvpAdminSelectedTaskIds = Array.from(new Set([...pvpAdminSelectedTaskIds, taskId]));
+          } else {
+            pvpAdminSelectedTaskIds = pvpAdminSelectedTaskIds.filter((id) => id !== taskId);
+          }
+        });
+      });
+    }
+
+    async function loadPvpAdminData() {
+      const response = await fetch('pvp_battles.php?action=admin_data', { credentials: 'same-origin' });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load PvP admin data');
+      }
+
+      pvpAdminUsers = Array.isArray(data.users) ? data.users : [];
+      pvpAdminTasks = Array.isArray(data.catalog) ? data.catalog : [];
+      const allowedIds = new Set(pvpAdminTasks.map((task) => Number(task.id || 0)).filter((id) => id > 0));
+      pvpAdminSelectedTaskIds = pvpAdminSelectedTaskIds.filter((id) => allowedIds.has(Number(id || 0)));
+
+      renderPvpAdminUsers();
+      renderPvpTaskCatalog();
+    }
+
+    async function createAdminPvpBattle() {
+      const player1Id = Number(document.getElementById('pvpPlayer1Select').value || 0);
+      const player2Id = Number(document.getElementById('pvpPlayer2Select').value || 0);
+      const taskIds = Array.from(new Set((pvpAdminSelectedTaskIds || []).map((id) => Number(id || 0)).filter((id) => id > 0)));
+
+      if (!player1Id || !player2Id || player1Id === player2Id) {
+        throw new Error('Select two different users');
+      }
+
+      if (!taskIds.length) {
+        throw new Error('Select at least one task');
+      }
+
+      const csrfToken = await fetchCsrfToken();
+      const formData = new FormData();
+      formData.append('csrf_token', csrfToken);
+      formData.append('action', 'admin_create_battle');
+      formData.append('player1_user_id', String(player1Id));
+      formData.append('player2_user_id', String(player2Id));
+      formData.append('task_ids', JSON.stringify(taskIds));
+
+      const response = await fetch('pvp_battles.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to create PvP battle');
+      }
+
+      setSuccess(`PvP battle created (ID: ${data.battle_id || '-'})`);
+    }
+
+    function openGalleryPreview(imageSrc, caption) {
+      const modal = document.getElementById('galleryModal');
+      const modalImage = document.getElementById('galleryModalImage');
+      const modalTitle = document.getElementById('galleryModalTitle');
+      modalImage.src = imageSrc;
+      modalTitle.textContent = caption ? String(caption) : 'Gallery photo';
+      modal.classList.remove('hidden');
+    }
+
+    function closeGalleryPreview() {
+      const modal = document.getElementById('galleryModal');
+      modal.classList.add('hidden');
+    }
+
+    function renderGalleryOwnerControls(adminUsers = [], ownerId = 0) {
+      const ownerSelect = document.getElementById('galleryOwnerSelect');
+      const ownerNote = document.getElementById('galleryOwnerNote');
+      const deletedBtn = document.getElementById('galleryDeletedViewBtn');
+      deletedBtn.classList.toggle('hidden', !canViewDeletedGallery);
+
+      if (!isSuperAdminActor()) {
+        ownerSelect.classList.add('hidden');
+        ownerNote.textContent = galleryViewMode === 'deleted' ? 'Deleted photos are available only for super admin' : 'Your gallery';
+        return;
+      }
+
+      ownerSelect.classList.remove('hidden');
+      ownerSelect.innerHTML = adminUsers.map((admin) => {
+        const adminId = Number(admin.id || 0);
+        const name = (admin.name || '').trim() || `Admin #${adminId}`;
+        const selected = adminId === Number(ownerId) ? 'selected' : '';
+        return `<option value="${adminId}" ${selected}>${name} (ID: ${adminId})</option>`;
+      }).join('');
+
+      const selectedOption = ownerSelect.options[ownerSelect.selectedIndex];
+      const prefix = galleryViewMode === 'deleted' ? 'Deleted of:' : 'Viewing:';
+      ownerNote.textContent = selectedOption ? `${prefix} ${selectedOption.textContent}` : 'Viewing admin gallery';
+    }
+
+    function refreshGalleryViewButtons() {
+      const activeBtn = document.getElementById('galleryActiveViewBtn');
+      const deletedBtn = document.getElementById('galleryDeletedViewBtn');
+      const uploadControls = document.getElementById('galleryUploadControls');
+      activeBtn.classList.toggle('active', galleryViewMode === 'active');
+      deletedBtn.classList.toggle('active', galleryViewMode === 'deleted');
+      deletedBtn.classList.toggle('hidden', !canViewDeletedGallery);
+      uploadControls.classList.toggle('hidden', galleryViewMode === 'deleted');
+      if (!canViewDeletedGallery && galleryViewMode === 'deleted') {
+        galleryViewMode = 'active';
+        activeBtn.classList.add('active');
+        uploadControls.classList.remove('hidden');
+      }
+    }
+
+    function renderGallery(items) {
+      const grid = document.getElementById('galleryGrid');
+      const currentUserId = Number(auth?.user?.user_id || 0);
+      if (!Array.isArray(items) || !items.length) {
+        const emptyText = galleryViewMode === 'deleted'
+          ? 'No deleted photos for selected user.'
+          : 'Gallery is empty. Upload your first photo.';
+        grid.innerHTML = `<div class="gallery-empty">${emptyText}</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map((item) => {
+        const id = Number(item.id || 0);
+        const ownerUserId = Number(item.owner_user_id || 0);
+        const imageData = String(item.image_data || '').trim();
+        const caption = String(item.caption || '').trim();
+        const createdAt = String(item.created_at || '').trim();
+        const imageAttr = escapeHtmlAttr(imageData);
+        const captionAttr = escapeHtml(caption || '');
+        const encodedSrc = encodeURIComponent(imageData);
+        const canDelete = galleryViewMode === 'active' && (isSuperAdminActor() || ownerUserId === currentUserId);
+        const deletedAt = String(item.deleted_at || '').trim();
+        const deletedInfo = galleryViewMode === 'deleted' && deletedAt
+          ? `<div class="gallery-item-time">Deleted: ${escapeHtml(deletedAt)}</div>`
+          : '';
+        const deleteBtn = canDelete ? `<button class="gallery-item-delete" type="button" data-gallery-delete-id="${id}">Delete</button>` : '';
+        return `<div class="gallery-item" data-gallery-src="${encodedSrc}" data-gallery-caption="${escapeHtmlAttr(caption)}">
+          ${deleteBtn}
+          <img src="${imageAttr}" alt="Gallery photo">
+          <div class="gallery-item-caption">${captionAttr || '-'}</div>
+          <div class="gallery-item-time">${escapeHtml(createdAt || '-')}</div>
+          ${deletedInfo}
+        </div>`;
+      }).join('');
+
+      grid.querySelectorAll('[data-gallery-delete-id]').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const photoId = Number(button.dataset.galleryDeleteId || 0);
+          if (!photoId) {
+            return;
+          }
+
+          if (!window.confirm('Delete this photo?')) {
+            return;
+          }
+
+          deleteGalleryPhoto(photoId).catch((error) => setError(error.message || 'Failed to delete photo'));
+        });
+      });
+
+      grid.querySelectorAll('.gallery-item').forEach((item) => {
+        item.addEventListener('click', () => {
+          const encoded = String(item.dataset.gallerySrc || '');
+          const caption = String(item.dataset.galleryCaption || '');
+          if (!encoded) {
+            return;
+          }
+
+          try {
+            openGalleryPreview(decodeURIComponent(encoded), caption);
+          } catch (error) {
+            setError('Failed to open gallery image');
+          }
+        });
+      });
+    }
+
+    async function loadGallery(ownerUserId = null, viewMode = null) {
+      const ownerId = Number(ownerUserId || 0);
+      const requestedView = viewMode === 'deleted' ? 'deleted' : galleryViewMode;
+      const params = new URLSearchParams();
+      if (isSuperAdminActor() && ownerId > 0) {
+        params.set('owner_user_id', String(ownerId));
+      }
+      if (requestedView === 'deleted') {
+        params.set('view', 'deleted');
+      }
+      const query = params.toString() ? `?${params.toString()}` : '';
+
+      const response = await fetch(`admin_gallery.php${query}`, { credentials: 'same-origin' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load gallery');
+      }
+
+      galleryOwnerUserId = Number(data.owner_user_id || 0);
+      galleryViewMode = data.view === 'deleted' ? 'deleted' : 'active';
+      canViewDeletedGallery = Boolean(data.can_view_deleted);
+      refreshGalleryViewButtons();
+      renderGalleryOwnerControls(data.admin_users || [], galleryOwnerUserId);
+      renderGallery(data.items || []);
+    }
+
+    async function deleteGalleryPhoto(photoId) {
+      const csrfToken = await fetchCsrfToken();
+      const formData = new FormData();
+      formData.append('csrf_token', csrfToken);
+      formData.append('action', 'delete');
+      formData.append('photo_id', String(photoId));
+
+      const response = await fetch('admin_gallery.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to delete photo');
+      }
+
+      await loadGallery(galleryOwnerUserId || Number(auth?.user?.user_id || 0), galleryViewMode);
+      setSuccess('Фото видалено');
+    }
+
+    async function uploadGalleryPhoto() {
+      const fileInput = document.getElementById('galleryUploadInput');
+      const captionInput = document.getElementById('galleryCaptionInput');
+      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+      if (!file) {
+        setError('Select an image first');
+        return;
+      }
+
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Only PNG/JPG/WEBP/GIF images are allowed');
+        return;
+      }
+
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('Failed to read image'));
+        reader.readAsDataURL(file);
+      });
+
+      const csrfToken = await fetchCsrfToken();
+      const formData = new FormData();
+      formData.append('csrf_token', csrfToken);
+      formData.append('image_data', imageData);
+      formData.append('caption', String(captionInput.value || '').trim());
+
+      const response = await fetch('admin_gallery.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to upload image');
+      }
+
+      fileInput.value = '';
+      captionInput.value = '';
+      galleryViewMode = 'active';
+      await loadGallery(galleryOwnerUserId || Number(auth?.user?.user_id || 0), 'active');
+      setSuccess('Фото успішно додано в галерею');
+    }
+
+    function escapeHtmlAttr(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function renderAudit(rows) {
+      const body = document.getElementById('auditBody');
+      if (!Array.isArray(rows) || !rows.length) {
+        body.innerHTML = '<tr><td colspan="6">No audit records found.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = rows.map((row) => {
+        const first = (row.first_name || '').trim();
+        const last = (row.last_name || '').trim();
+        const actor = (first + ' ' + last).trim() || `User #${row.user_id ?? '-'}`;
+        return `<tr>
+          <td>${row.id ?? '-'}</td>
+          <td>${row.timestamp ?? '-'}</td>
+          <td>${actor}</td>
+          <td>${row.action ?? '-'}</td>
+          <td><pre style="margin:0;white-space:pre-wrap;max-width:280px;">${row.details ?? ''}</pre></td>
+          <td>${row.ip ?? '-'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openAvatarPreview(avatarSrc) {
+      const modal = document.getElementById('avatarModal');
+      const modalImage = document.getElementById('avatarModalImage');
+      modalImage.src = avatarSrc || DEFAULT_AVATAR;
+      modal.classList.remove('hidden');
+    }
+
+    function closeAvatarPreview() {
+      const modal = document.getElementById('avatarModal');
+      modal.classList.add('hidden');
+    }
+
+    function renderUsers(users) {
+      const usersBody = document.getElementById('usersBody');
+      const currentUserId = Number(auth?.user?.user_id || 0);
+      const isSuperAdmin = Number(currentUserId) === 5;
+
+      if (!Array.isArray(users) || !users.length) {
+        usersBody.innerHTML = '<tr><td colspan="11">No users found.</td></tr>';
+        return;
+      }
+
+      usersBody.innerHTML = users.map((user) => {
+        const id = Number(user.id || 0);
+        const firstName = (user.first_name || '').trim();
+        const lastName = (user.last_name || '').trim();
+        const avatar = (user.avatar_data || '').trim() || DEFAULT_AVATAR;
+        const avatarAttr = escapeHtmlAttr(avatar);
+        const avatarPreviewValue = encodeURIComponent(avatar);
+        const isAdmin = Number(user.is_admin) === 1 || id === 5;
+        const isBlocked = Number(user.is_active) !== 1 || Boolean(user.blocked_at);
+        const isOnline = Boolean(user.is_online);
+        const canAudit = Number(user.can_view_audit) === 1 || id === 5;
+
+        const roleBadge = id === 5
+          ? '<span class="role-badge role-super">Super Admin</span>'
+          : (isAdmin ? '<span class="role-badge">Admin</span>' : '<span class="role-badge">User</span>');
+
+        const onlineBadge = isOnline
+          ? '<span class="status-pill status-online">Online</span>'
+          : '<span class="status-pill status-offline">Offline</span>';
+
+        const statusBadge = isBlocked
+          ? '<span class="status-pill status-blocked">Blocked</span>'
+          : '<span class="status-pill status-online">Active</span>';
+
+        const grantBtn = id === 5 || isAdmin
+          ? ''
+          : `<button data-action="grant_admin" data-target-user-id="${id}">Make Admin</button>`;
+
+        const revokeBtn = id === 5 || !isAdmin || id === currentUserId
+          ? ''
+          : `<button class="danger" data-action="revoke_admin" data-target-user-id="${id}">Remove Admin</button>`;
+
+        const blockBtn = id === 5 || id === currentUserId || isBlocked
+          ? ''
+          : `<button class="danger" data-action="block_user" data-target-user-id="${id}">Block</button>`;
+
+        const unblockBtn = id === 5 || !isBlocked
+          ? ''
+          : `<button data-action="unblock_user" data-target-user-id="${id}">Unblock</button>`;
+
+        const forceLogoutBtn = id === 5 || id === currentUserId
+          ? ''
+          : `<button data-action="force_logout" data-target-user-id="${id}">Force Logout</button>`;
+
+        const grantAuditBtn = !isSuperAdmin || id === 5 || canAudit
+          ? ''
+          : `<button data-action="grant_audit" data-target-user-id="${id}">Allow Audit</button>`;
+
+        const revokeAuditBtn = !isSuperAdmin || id === 5 || !canAudit
+          ? ''
+          : `<button class="danger" data-action="revoke_audit" data-target-user-id="${id}">Revoke Audit</button>`;
+
+        const selfRoleHint = id === currentUserId && isAdmin
+          ? '<span style="font-size:0.72rem;opacity:0.8;">(you)</span>'
+          : '';
+
+        const actionButtons = [
+          grantBtn,
+          revokeBtn,
+          blockBtn,
+          unblockBtn,
+          forceLogoutBtn,
+          grantAuditBtn,
+          revokeAuditBtn,
+        ].filter((item) => typeof item === 'string' && item.includes('<button'));
+
+        const actionsMarkup = actionButtons.length
+          ? actionButtons.join(' ')
+          : '<span style="font-size:0.72rem;opacity:0.75;">-</span>';
+
+        return `<tr>
+          <td><img src="${avatarAttr}" alt="avatar" class="avatar-mini" data-avatar-preview data-avatar-src="${avatarPreviewValue}"></td>
+          <td>${id}</td>
+          <td>${firstName || '-'}</td>
+          <td>${lastName || '-'}</td>
+          <td>${onlineBadge}</td>
+          <td>${user.last_activity_at || '-'}</td>
+          <td>${user.last_login || '-'}</td>
+          <td>${statusBadge}</td>
+          <td>${roleBadge} ${selfRoleHint}</td>
+          <td>${canAudit ? '<span class="status-pill">Allowed</span>' : '<span class="status-pill status-offline">No</span>'}</td>
+          <td>${actionsMarkup}</td>
+        </tr>`;
+      }).join('');
+
+      usersBody.querySelectorAll('button[data-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.action;
+          const userId = Number(button.dataset.targetUserId || 0);
+          if (!action || !userId) {
+            return;
+          }
+          runUserAction(action, userId).catch((error) => {
+            setError(error.message || 'Action failed');
+          });
+        });
+      });
+
+      usersBody.querySelectorAll('tr').forEach((row) => {
+        const actionsCell = row.cells[10];
+        if (!actionsCell) {
+          return;
+        }
+
+        const hasButton = actionsCell.querySelector('button');
+        if (hasButton) {
+          return;
+        }
+
+        if (/^\s*\d+\s*$/.test(actionsCell.textContent || '')) {
+          actionsCell.innerHTML = '<span style="font-size:0.72rem;opacity:0.75;">-</span>';
+        }
+      });
+
+      usersBody.querySelectorAll('[data-avatar-preview]').forEach((avatarEl) => {
+        avatarEl.addEventListener('click', () => {
+          const encoded = String(avatarEl.dataset.avatarSrc || '');
+          let previewSrc = DEFAULT_AVATAR;
+          if (encoded) {
+            try {
+              previewSrc = decodeURIComponent(encoded);
+            } catch (error) {
+              previewSrc = DEFAULT_AVATAR;
+            }
+          }
+          openAvatarPreview(previewSrc);
+        });
+      });
+    }
+
+    async function loadUsers() {
+      const response = await fetch('admin_users.php', { credentials: 'same-origin' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load users');
+      }
+
+      currentActor = data.actor || null;
+      refreshAuditTabVisibility();
+      refreshPresenceToggle();
+      renderUsers(data.users);
+    }
+
+    async function loadAudit() {
+      if (!canSeeAuditTab()) {
+        document.getElementById('auditBody').innerHTML = '<tr><td colspan="6">Audit access not granted.</td></tr>';
+        return;
+      }
+
+      const limit = Number(document.getElementById('auditLimitInput').value || 100);
+      const response = await fetch(`admin_audit.php?limit=${Math.max(10, Math.min(300, limit))}`, { credentials: 'same-origin' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load audit log');
+      }
+
+      renderAudit(data.rows);
+    }
+
+    async function runUserAction(action, targetUserId, extraFields = {}) {
+      setError('');
+      const csrfToken = await fetchCsrfToken();
+      const formData = new FormData();
+      formData.append('csrf_token', csrfToken);
+      formData.append('action', action);
+      formData.append('target_user_id', String(targetUserId));
+      Object.entries(extraFields || {}).forEach(([key, value]) => {
+        formData.append(String(key), String(value));
+      });
+
+      const response = await fetch('admin_users.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Action failed');
+      }
+
+      await Promise.all([loadUsers(), loadAdminData()]);
+      if (canSeeAuditTab()) {
+        await loadAudit();
+      }
+
+      if (action === 'force_logout') {
+        setSuccess(`Пользователь ID ${targetUserId} успешно выгнан из сессии`);
+      }
+
+      if (action === 'set_hide_presence_mode') {
+        const enabled = Number(extraFields?.hide_presence_mode || 0) === 1;
+        setSuccess(enabled ? 'Скрытый режим включен' : 'Скрытый режим выключен');
+      }
+    }
+
+    async function loadAdminData() {
+      setError('');
+
+      await auth.checkAuth();
+      if (!auth.isAuthenticated || !auth.user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      if (!isAdminUser(auth.user)) {
+        setError('Access denied. Admin privileges required.');
+        return;
+      }
+
+      document.getElementById('adminUserName').textContent = (auth.user.full_name || auth.user.user_name || 'Admin').trim();
+      document.getElementById('adminUserId').textContent = String(auth.user.user_id);
+
+      const response = await fetch('admin_stats.php', { credentials: 'same-origin' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || 'Failed to load admin data.');
+        return;
+      }
+
+      lastReport = data;
+      renderStats(data);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activateTab(btn.dataset.tab);
+      });
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      Promise.all([
+        loadAdminData(),
+        loadUsers(),
+        loadAudit(),
+        loadGallery(galleryOwnerUserId || Number(auth?.user?.user_id || 0)),
+        loadPvpAdminData(),
+        loadBiosTaskAdminData().then(() => {
+          const selectedUserId = Number(document.getElementById('biosTasksUserSelect').value || 0);
+          if (!selectedUserId) {
+            return;
+          }
+          return loadBiosTaskUserConfig(selectedUserId);
+        })
+      ]).catch((error) => setError(error.message || 'Load error'));
+    });
+
+    document.getElementById('promoteByIdBtn').addEventListener('click', () => {
+      const input = document.getElementById('promoteUserIdInput');
+      const userId = Number((input.value || '').trim());
+      if (!userId) {
+        setError('Enter valid user ID');
+        return;
+      }
+      runUserAction('grant_admin', userId)
+        .then(() => {
+          input.value = '';
+          setError('');
+        })
+        .catch((error) => setError(error.message || 'Action failed'));
+    });
+
+    document.getElementById('refreshAuditBtn').addEventListener('click', () => {
+      loadAudit().catch((error) => setError(error.message || 'Failed to load audit'));
+    });
+
+    document.getElementById('presenceToggle').addEventListener('change', (event) => {
+      const checked = Boolean(event.target.checked);
+      runUserAction('set_hide_presence_mode', 5, {
+        hide_presence_mode: checked ? '1' : '0'
+      }).catch((error) => {
+        event.target.checked = !checked;
+        setError(error.message || 'Failed to change hidden mode');
+      });
+    });
+
+    document.getElementById('refreshGalleryBtn').addEventListener('click', () => {
+      const ownerSelect = document.getElementById('galleryOwnerSelect');
+      const selectedOwnerId = Number(ownerSelect.value || 0);
+      const ownerId = isSuperAdminActor() && selectedOwnerId > 0
+        ? selectedOwnerId
+        : Number(auth?.user?.user_id || 0);
+      loadGallery(ownerId, galleryViewMode).catch((error) => setError(error.message || 'Failed to load gallery'));
+    });
+
+    document.getElementById('galleryOwnerSelect').addEventListener('change', (event) => {
+      const selectedOwnerId = Number(event.target.value || 0);
+      if (!isSuperAdminActor() || selectedOwnerId <= 0) {
+        return;
+      }
+      loadGallery(selectedOwnerId, galleryViewMode).catch((error) => setError(error.message || 'Failed to load gallery'));
+    });
+
+    document.getElementById('galleryActiveViewBtn').addEventListener('click', () => {
+      galleryViewMode = 'active';
+      refreshGalleryViewButtons();
+      loadGallery(galleryOwnerUserId || Number(auth?.user?.user_id || 0), 'active').catch((error) => setError(error.message || 'Failed to load gallery'));
+    });
+
+    document.getElementById('galleryDeletedViewBtn').addEventListener('click', () => {
+      if (!canViewDeletedGallery) {
+        return;
+      }
+      galleryViewMode = 'deleted';
+      refreshGalleryViewButtons();
+      loadGallery(galleryOwnerUserId || Number(auth?.user?.user_id || 0), 'deleted').catch((error) => setError(error.message || 'Failed to load deleted gallery'));
+    });
+
+    document.getElementById('uploadGalleryBtn').addEventListener('click', () => {
+      uploadGalleryPhoto().catch((error) => setError(error.message || 'Failed to upload image'));
+    });
+
+    document.getElementById('biosTasksUserSelect').addEventListener('change', (event) => {
+      const targetUserId = Number(event.target.value || 0);
+      loadBiosTaskUserConfig(targetUserId).catch((error) => setError(error.message || 'Failed to load BIOS user config'));
+    });
+
+    document.getElementById('biosSelectAllBtn').addEventListener('click', () => {
+      biosSelectedTaskIds = (biosTaskCatalog || []).map((task) => Number(task.id || 0)).filter((id) => id > 0);
+      renderBiosTaskCatalog();
+    });
+
+    document.getElementById('biosUnselectAllBtn').addEventListener('click', () => {
+      biosSelectedTaskIds = [];
+      renderBiosTaskCatalog();
+    });
+
+    document.getElementById('biosRefreshConfigBtn').addEventListener('click', () => {
+      const selectedUserId = Number(document.getElementById('biosTasksUserSelect').value || 0);
+      loadBiosTaskAdminData()
+        .then(() => selectedUserId ? loadBiosTaskUserConfig(selectedUserId) : null)
+        .catch((error) => setError(error.message || 'Failed to refresh BIOS config'));
+    });
+
+    document.getElementById('biosSaveConfigBtn').addEventListener('click', () => {
+      saveBiosTaskConfig().catch((error) => setError(error.message || 'Failed to save BIOS config'));
+    });
+
+    document.getElementById('pvpSelectAllTasksBtn').addEventListener('click', () => {
+      pvpAdminSelectedTaskIds = (pvpAdminTasks || []).map((task) => Number(task.id || 0)).filter((id) => id > 0);
+      renderPvpTaskCatalog();
+    });
+
+    document.getElementById('pvpClearTasksBtn').addEventListener('click', () => {
+      pvpAdminSelectedTaskIds = [];
+      renderPvpTaskCatalog();
+    });
+
+    document.getElementById('pvpRefreshBtn').addEventListener('click', () => {
+      loadPvpAdminData().catch((error) => setError(error.message || 'Failed to refresh PvP data'));
+    });
+
+    document.getElementById('pvpCreateBattleBtn').addEventListener('click', () => {
+      createAdminPvpBattle().catch((error) => setError(error.message || 'Failed to create PvP battle'));
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      if (!lastReport) {
+        setError('Nothing to copy yet. Click Refresh first.');
+        return;
+      }
+
+      const reportText = JSON.stringify(lastReport, null, 2);
+      try {
+        await navigator.clipboard.writeText(reportText);
+        setError('');
+      } catch (error) {
+        setError('Clipboard permission denied.');
+      }
+    });
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      window.open('bios.html', '_blank', 'noopener,noreferrer');
+    });
+
+    document.getElementById('avatarModal').addEventListener('click', (event) => {
+      if (event.target.id === 'avatarModal' || event.target.id === 'avatarModalImage') {
+        closeAvatarPreview();
+      }
+    });
+
+    document.getElementById('galleryModal').addEventListener('click', (event) => {
+      if (event.target.id === 'galleryModal' || event.target.id === 'galleryModalImage') {
+        closeGalleryPreview();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAvatarPreview();
+        closeGalleryPreview();
+      }
+    });
+
+    Promise.all([loadAdminData(), loadUsers()])
+      .then(() => Promise.all([
+        loadAudit(),
+        loadGallery(Number(auth?.user?.user_id || 0)),
+        loadPvpAdminData(),
+        loadBiosTaskAdminData().then(() => {
+          const select = document.getElementById('biosTasksUserSelect');
+          const selectedUserId = Number(select.value || 0);
+          if (!selectedUserId) {
+            return;
+          }
+          return loadBiosTaskUserConfig(selectedUserId);
+        })
+      ]))
+      .catch((error) => {
+        setError(error.message || 'Load error');
+      });
+  </script>
+</body>
+</html>
